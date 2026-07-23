@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Main Yuk! 💙</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0a1628;
+      font-family: 'Lato', sans-serif;
+      color: #a8c8e8;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== PARTICLES ===== */
+    .particles-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .particle { position: absolute; bottom: -30px; animation: floatUp linear infinite; opacity: 0; }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.5; }
+      100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ===== MUSIC BUTTON ===== */
+    #musicWrapper {
+      position: fixed; top: 1.2rem; right: 1.2rem;
+      z-index: 8000; display: flex; align-items: center; gap: 0.6rem; flex-direction: row-reverse;
+    }
+    #musicBtn {
+      position: relative; background: rgba(26,95,168,0.5);
+      border: 1.5px solid rgba(74,144,217,0.5); border-radius: 50%;
+      width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; cursor: pointer; backdrop-filter: blur(8px);
+      transition: background 0.2s, transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    #musicBtn:hover { background: rgba(74,144,217,0.6); transform: scale(1.1); }
+    #musicBtn.playing { animation: musicPulse 1.5s ease-in-out infinite; }
+    @keyframes musicPulse {
+      0%, 100% { box-shadow: 0 4px 15px rgba(74,144,217,0.4); }
+      50%       { box-shadow: 0 4px 30px rgba(74,144,217,0.8); }
+    }
+    #musicNote {
+      font-size: 0.72rem; color: rgba(168,200,232,0.75);
+      background: rgba(6,15,30,0.6); backdrop-filter: blur(6px);
+      border: 1px solid rgba(74,144,217,0.2); border-radius: 20px;
+      padding: 0.3rem 0.75rem; white-space: nowrap; letter-spacing: 0.5px;
+    }
+
+    /* ===== LAYOUT ===== */
+    .page { display: none; position: relative; z-index: 1; min-height: 100vh; padding: 2rem 1rem 4rem; }
+    .page.active { display: block; }
+
+    /* ===== HUB ===== */
+    .hub-header { text-align: center; padding: 3rem 1rem 2rem; }
+    .hub-header h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2rem, 7vw, 3.2rem);
+      color: #fff; text-shadow: 0 4px 24px rgba(74,144,217,0.6);
+      margin-bottom: 0.5rem;
+    }
+    .hub-header p { color: #7ec8f7; font-size: 0.95rem; letter-spacing: 1px; }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem; max-width: 900px; margin: 0 auto; padding: 0 1rem;
+    }
+    .game-card {
+      background: rgba(13,35,71,0.6); border: 1px solid rgba(74,144,217,0.25);
+      border-radius: 20px; padding: 1.8rem 1.5rem; cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      backdrop-filter: blur(10px); text-align: center;
+    }
+    .game-card:hover {
+      transform: translateY(-4px); border-color: rgba(74,144,217,0.6);
+      box-shadow: 0 8px 32px rgba(74,144,217,0.2);
+    }
+    .game-card .icon { font-size: 2.8rem; margin-bottom: 0.8rem; display: block; }
+    .game-card h3 { font-family: 'Dancing Script', cursive; font-size: 1.4rem; color: #fff; margin-bottom: 0.4rem; }
+    .game-card p { font-size: 0.82rem; color: #7a9ab8; line-height: 1.5; }
+    .game-card .badge {
+      display: inline-block; margin-top: 0.8rem; padding: 0.2rem 0.8rem;
+      background: rgba(74,144,217,0.15); border: 1px solid rgba(74,144,217,0.3);
+      border-radius: 20px; font-size: 0.72rem; color: #7ec8f7; letter-spacing: 1px;
+    }
+
+    /* ===== GAME CONTAINER ===== */
+    .game-wrap {
+      max-width: 640px; margin: 0 auto; padding: 1rem;
+      animation: fadeUp 0.4s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .game-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .btn-back-game {
+      background: rgba(74,144,217,0.1); border: 1px solid rgba(74,144,217,0.3);
+      color: #7ec8f7; border-radius: 50px; padding: 0.4rem 1rem;
+      font-size: 0.82rem; cursor: pointer; font-family: 'Lato', sans-serif;
+      transition: background 0.2s;
+    }
+    .btn-back-game:hover { background: rgba(74,144,217,0.25); }
+    .game-title {
+      font-family: 'Dancing Script', cursive; font-size: 1.6rem; color: #fff;
+    }
+
+    .card-box {
+      background: rgba(13,35,71,0.7); border: 1px solid rgba(74,144,217,0.2);
+      border-radius: 20px; padding: 2rem; backdrop-filter: blur(12px);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+    }
+
+    /* Score & info */
+    .score-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.2rem; padding: 0.5rem 1rem;
+      background: rgba(74,144,217,0.08); border-radius: 10px;
+      font-size: 0.82rem; color: #7ec8f7;
+    }
+    .score-bar span { font-weight: 700; color: #fff; }
+
+    /* Buttons */
+    .btn-primary {
+      display: inline-block; padding: 0.75rem 2rem;
+      background: rgba(74,144,217,0.2); border: 1.5px solid rgba(74,144,217,0.5);
+      color: #7ec8f7; border-radius: 50px; font-size: 0.9rem;
+      font-family: 'Lato', sans-serif; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: rgba(74,144,217,0.35); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+    .btn-danger {
+      display: inline-block; padding: 0.75rem 2rem;
+      background: rgba(217,74,74,0.15); border: 1.5px solid rgba(217,74,74,0.4);
+      color: #f7a0a0; border-radius: 50px; font-size: 0.9rem;
+      font-family: 'Lato', sans-serif; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-danger:hover { background: rgba(217,74,74,0.28); }
+
+    .text-center { text-align: center; }
+    .mt-1 { margin-top: 0.8rem; }
+    .mt-2 { margin-top: 1.5rem; }
+    .mt-3 { margin-top: 2rem; }
+    .gap-1 { gap: 0.6rem; }
+    .flex-center { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; }
+
+    /* ===== GAME 1 - TEBAK LIRIK ===== */
+    .lyric-line {
+      font-size: 1.1rem; color: #c8dff0; line-height: 2;
+      margin-bottom: 1.2rem; text-align: center;
+    }
+    .lyric-blank {
+      display: inline-block; border-bottom: 2px solid #4a90d9;
+      min-width: 80px; text-align: center; color: #7ec8f7;
+      font-weight: 700; padding: 0 4px;
+    }
+    .choices-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.7rem; margin-top: 1rem;
+    }
+    .choice-btn {
+      padding: 0.7rem; background: rgba(74,144,217,0.08);
+      border: 1px solid rgba(74,144,217,0.25); border-radius: 12px;
+      color: #a8c8e8; font-size: 0.88rem; cursor: pointer;
+      font-family: 'Lato', sans-serif; transition: all 0.15s;
+      text-align: center;
+    }
+    .choice-btn:hover:not(:disabled) { background: rgba(74,144,217,0.2); border-color: #4a90d9; }
+    .choice-btn.correct { background: rgba(74,200,100,0.2); border-color: #4dc864; color: #9fedb5; }
+    .choice-btn.wrong   { background: rgba(217,74,74,0.2);  border-color: #d94a4a; color: #f7a0a0; }
+    .choice-btn:disabled { cursor: default; }
+    .feedback-msg { text-align: center; font-size: 1rem; min-height: 1.5rem; margin-top: 0.8rem; }
+
+    /* ===== GAME 2 - PILIH JAWABAN ===== */
+    .question-text {
+      font-size: 1.1rem; color: #c8dff0; text-align: center;
+      margin-bottom: 1.5rem; line-height: 1.7;
+    }
+    .options-col { display: flex; flex-direction: column; gap: 0.7rem; }
+    .option-btn {
+      padding: 0.85rem 1.2rem; background: rgba(74,144,217,0.08);
+      border: 1px solid rgba(74,144,217,0.25); border-radius: 14px;
+      color: #a8c8e8; font-size: 0.9rem; cursor: pointer;
+      font-family: 'Lato', sans-serif; transition: all 0.15s; text-align: left;
+    }
+    .option-btn:hover:not(:disabled) { background: rgba(74,144,217,0.2); border-color: #4a90d9; transform: translateX(4px); }
+    .option-btn.selected { background: rgba(74,144,217,0.3); border-color: #7ec8f7; color: #fff; }
+    .result-text {
+      margin-top: 1rem; padding: 1rem; border-radius: 12px; text-align: center;
+      font-size: 0.9rem; line-height: 1.6;
+      background: rgba(74,144,217,0.1); border: 1px solid rgba(74,144,217,0.2);
+      color: #c8dff0; display: none;
+    }
+
+    /* ===== GAME 3 - SUSUN KATA ===== */
+    .word-target {
+      text-align: center; font-family: 'Dancing Script', cursive;
+      font-size: 1.3rem; color: #7ec8f7; margin-bottom: 0.5rem;
+    }
+    .word-hint { text-align: center; font-size: 0.78rem; color: #5a8aaa; margin-bottom: 1.2rem; }
+    .letter-slots {
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem;
+      min-height: 52px; margin-bottom: 1rem; padding: 0.5rem;
+      background: rgba(74,144,217,0.05); border: 1px dashed rgba(74,144,217,0.2);
+      border-radius: 12px;
+    }
+    .letter-tile {
+      width: 42px; height: 42px; background: rgba(74,144,217,0.15);
+      border: 1.5px solid rgba(74,144,217,0.4); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700; color: #fff; cursor: pointer;
+      transition: transform 0.1s, background 0.15s; user-select: none;
+    }
+    .letter-tile:hover { background: rgba(74,144,217,0.3); transform: scale(1.08); }
+    .letter-tile.placed { background: rgba(74,200,100,0.15); border-color: #4dc864; }
+    .letter-tile.empty  { background: transparent; border-color: rgba(74,144,217,0.15); cursor: default; }
+    .letter-tile.wrong-anim { animation: shake 0.3s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+    .shuffle-src {
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;
+    }
+
+    /* ===== GAME 4 - KLIK HATI ===== */
+    #heartArena {
+      position: relative; width: 100%; height: 340px;
+      background: rgba(6,15,30,0.5); border: 1px solid rgba(74,144,217,0.15);
+      border-radius: 16px; overflow: hidden; cursor: default;
+    }
+    .heart-target {
+      position: absolute; font-size: 2rem; cursor: pointer;
+      user-select: none; transition: transform 0.1s;
+      animation: heartAppear 0.2s ease;
+    }
+    .heart-target:hover { transform: scale(1.2); }
+    @keyframes heartAppear { from{transform:scale(0)} to{transform:scale(1)} }
+    .combo-text {
+      position: absolute; font-size: 0.9rem; font-weight: 700;
+      color: #7ec8f7; pointer-events: none; animation: floatScore 0.8s ease forwards;
+    }
+    @keyframes floatScore { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-40px)} }
+    #timer-bar-wrap {
+      width: 100%; height: 8px; background: rgba(74,144,217,0.15);
+      border-radius: 4px; margin-bottom: 0.8rem; overflow: hidden;
+    }
+    #timer-bar { height: 100%; background: #4a90d9; border-radius: 4px; transition: width 0.1s linear; }
+
+    /* ===== GAME 5 - TEBAK EMOJI ===== */
+    .emoji-display {
+      font-size: 3.5rem; text-align: center; margin: 1rem 0 0.5rem;
+      letter-spacing: 6px;
+    }
+    .emoji-question { text-align: center; color: #7a9ab8; font-size: 0.85rem; margin-bottom: 1.2rem; }
+    .emoji-input {
+      width: 100%; padding: 0.8rem 1rem;
+      background: rgba(74,144,217,0.08); border: 1.5px solid rgba(74,144,217,0.3);
+      border-radius: 12px; color: #fff; font-size: 1rem;
+      font-family: 'Lato', sans-serif; outline: none; text-align: center;
+      transition: border-color 0.2s;
+    }
+    .emoji-input:focus { border-color: #4a90d9; }
+    .emoji-input.correct { border-color: #4dc864; background: rgba(74,200,100,0.1); }
+    .emoji-input.wrong   { border-color: #d94a4a; background: rgba(217,74,74,0.1); animation: shake 0.3s; }
+    .hint-text { text-align: center; color: #5a8aaa; font-size: 0.8rem; margin-top: 0.5rem; min-height: 1.2rem; }
+
+    /* ===== RESULT SCREEN ===== */
+    .result-screen { text-align: center; padding: 1.5rem; }
+    .result-screen .big-emoji { font-size: 4rem; margin-bottom: 1rem; }
+    .result-screen h2 { font-family: 'Dancing Script', cursive; font-size: 2rem; color: #fff; margin-bottom: 0.5rem; }
+    .result-screen p { color: #a8c8e8; margin-bottom: 1.5rem; }
+    .final-score { font-size: 2.5rem; font-weight: 700; color: #7ec8f7; }
+
+    /* ===== PROGRESS STARS ===== */
+    .stars-row { display: flex; justify-content: center; gap: 0.4rem; margin: 0.8rem 0; }
+    .star { font-size: 1.4rem; opacity: 0.25; transition: opacity 0.3s; }
+    .star.lit { opacity: 1; }
+
+    /* ===== RESPONSIVE ===== */
+    @media(max-width:480px){
+      .choices-grid { grid-template-columns: 1fr; }
+      #heartArena { height: 280px; }
+      .games-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PARTICLES -->
+<div class="particles-container" id="particlesContainer"></div>
+
+<!-- MUSIC -->
+<div id="musicWrapper">
+  <button id="musicBtn" onclick="toggleMusic()" title="Musik">🎵</button>
+  <span id="musicNote" style="font-family:'Lato',sans-serif;font-size:0.72rem;color:rgba(168,200,232,0.75);background:rgba(6,15,30,0.6);backdrop-filter:blur(6px);border:1px solid rgba(74,144,217,0.2);border-radius:20px;padding:0.3rem 0.75rem;white-space:nowrap;letter-spacing:0.5px;">🎵 kalau mau sambil lagu klik tombol musik</span>
+</div>
+
+<!-- ===================== HUB PAGE ===================== -->
+<div id="page-hub" class="page active">
+  <div class="hub-header">
+    <h1>Main Yuk, Banana! 💙</h1>
+    <p>5 permainan kecil buat kamu</p>
+  </div>
+  <div class="games-grid">
+    <div class="game-card" onclick="openGame('g1')">
+      <span class="icon">🎵</span>
+      <h3>Tebak Lirik</h3>
+      <p>Lengkapi lirik lagu Tulus yang kosong. Seberapa hafal kamu?</p>
+      <span class="badge">5 soal</span>
+    </div>
+    <div class="game-card" onclick="openGame('g2')">
+      <span class="icon">💭</span>
+      <h3>Kamu Lebih Suka?</h3>
+      <p>Pilihan-pilihan romantis yang bikin kamu senyum sendiri.</p>
+      <span class="badge">6 pertanyaan</span>
+    </div>
+    <div class="game-card" onclick="openGame('g3')">
+      <span class="icon">🔤</span>
+      <h3>Susun Kata Cinta</h3>
+      <p>Huruf-hurufnya diacak. Susun kembali jadi kata yang bermakna!</p>
+      <span class="badge">5 kata</span>
+    </div>
+    <div class="game-card" onclick="openGame('g4')">
+      <span class="icon">💙</span>
+      <h3>Tangkap Hati</h3>
+      <p>Hati bermunculan dan menghilang. Klik sebanyak mungkin dalam 20 detik!</p>
+      <span class="badge">20 detik</span>
+    </div>
+    <div class="game-card" onclick="openGame('g5')">
+      <span class="icon">🤔</span>
+      <h3>Tebak dari Emoji</h3>
+      <p>Sebuah perasaan digambarkan pakai emoji. Bisa tebak?</p>
+      <span class="badge">6 tebakan</span>
+    </div>
+  </div>
+  <div class="text-center mt-3">
+    <a href="pesan.html" style="color:#5a8aaa;font-size:0.82rem;text-decoration:none;">← balik ke pesan</a>
+  </div>
+</div>
+
+<!-- ===================== GAME 1 - TEBAK LIRIK ===================== -->
+<div id="page-g1" class="page">
+  <div class="game-wrap">
+    <div class="game-header">
+      <button class="btn-back-game" onclick="backToHub()">← Hub</button>
+      <span class="game-title">🎵 Tebak Lirik</span>
+    </div>
+    <div class="card-box">
+      <div class="score-bar">
+        <div>Soal <span id="g1-qnum">1</span>/5</div>
+        <div>Skor <span id="g1-score">0</span></div>
+      </div>
+      <div class="stars-row" id="g1-stars"></div>
+      <p style="text-align:center;font-size:0.8rem;color:#5a8aaa;margin-bottom:1rem;">Pilih kata yang tepat untuk melengkapi lirik:</p>
+      <div class="lyric-line" id="g1-lyric"></div>
+      <div class="choices-grid" id="g1-choices"></div>
+      <div class="feedback-msg" id="g1-feedback"></div>
+      <div class="text-center mt-2">
+        <button class="btn-primary" id="g1-next" onclick="g1Next()" style="display:none;">Lanjut →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== GAME 2 - PILIH JAWABAN ===================== -->
+<div id="page-g2" class="page">
+  <div class="game-wrap">
+    <div class="game-header">
+      <button class="btn-back-game" onclick="backToHub()">← Hub</button>
+      <span class="game-title">💭 Kamu Lebih Suka?</span>
+    </div>
+    <div class="card-box">
+      <div class="score-bar">
+        <div>Pertanyaan <span id="g2-qnum">1</span>/6</div>
+        <div id="g2-status">Pilih salah satu!</div>
+      </div>
+      <p class="question-text" id="g2-question"></p>
+      <div class="options-col" id="g2-options"></div>
+      <div class="result-text" id="g2-result"></div>
+      <div class="text-center mt-2">
+        <button class="btn-primary" id="g2-next" onclick="g2Next()" style="display:none;">Selanjutnya →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== GAME 3 - SUSUN KATA ===================== -->
+<div id="page-g3" class="page">
+  <div class="game-wrap">
+    <div class="game-header">
+      <button class="btn-back-game" onclick="backToHub()">← Hub</button>
+      <span class="game-title">🔤 Susun Kata</span>
+    </div>
+    <div class="card-box">
+      <div class="score-bar">
+        <div>Kata <span id="g3-qnum">1</span>/5</div>
+        <div>Skor <span id="g3-score">0</span></div>
+      </div>
+      <p class="word-hint" id="g3-hint">Petunjuk: —</p>
+      <div class="letter-slots" id="g3-slots"></div>
+      <div class="shuffle-src" id="g3-src"></div>
+      <div class="feedback-msg" id="g3-feedback"></div>
+      <div class="flex-center gap-1 mt-2">
+        <button class="btn-danger" onclick="g3Reset()">↺ Reset</button>
+        <button class="btn-primary" id="g3-next" onclick="g3Next()" style="display:none;">Lanjut →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== GAME 4 - TANGKAP HATI ===================== -->
+<div id="page-g4" class="page">
+  <div class="game-wrap">
+    <div class="game-header">
+      <button class="btn-back-game" onclick="backToHub()">← Hub</button>
+      <span class="game-title">💙 Tangkap Hati</span>
+    </div>
+    <div class="card-box">
+      <div class="score-bar">
+        <div>Skor: <span id="g4-score">0</span></div>
+        <div>Waktu: <span id="g4-time">20</span>s</div>
+      </div>
+      <div id="timer-bar-wrap"><div id="timer-bar" style="width:100%"></div></div>
+      <div id="heartArena" id="g4-arena"></div>
+      <div class="text-center mt-2" id="g4-start-wrap">
+        <button class="btn-primary" onclick="g4Start()">Mulai!</button>
+      </div>
+      <div class="result-screen" id="g4-result" style="display:none;">
+        <div class="big-emoji">💙</div>
+        <h2>Waktu Habis!</h2>
+        <p>Kamu berhasil menangkap</p>
+        <div class="final-score" id="g4-final">0</div>
+        <p>hati 💙</p>
+        <div class="flex-center gap-1 mt-2">
+          <button class="btn-primary" onclick="g4Start()">Main Lagi</button>
+          <button class="btn-back-game" onclick="backToHub()">← Hub</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== GAME 5 - TEBAK EMOJI ===================== -->
+<div id="page-g5" class="page">
+  <div class="game-wrap">
+    <div class="game-header">
+      <button class="btn-back-game" onclick="backToHub()">← Hub</button>
+      <span class="game-title">🤔 Tebak dari Emoji</span>
+    </div>
+    <div class="card-box">
+      <div class="score-bar">
+        <div>Soal <span id="g5-qnum">1</span>/6</div>
+        <div>Skor <span id="g5-score">0</span></div>
+      </div>
+      <div class="emoji-display" id="g5-emoji"></div>
+      <p class="emoji-question" id="g5-question">Perasaan apa yang digambarkan emoji ini?</p>
+      <div class="choices-grid" id="g5-choices"></div>
+      <div class="feedback-msg" id="g5-feedback"></div>
+      <div class="hint-text" id="g5-hint"></div>
+      <div class="text-center mt-2">
+        <button class="btn-primary" id="g5-next" onclick="g5Next()" style="display:none;">Lanjut →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== PARTICLES =====
+const EMOJIS = ['💙','🌸','✨','💫','⭐','🌊','🫧'];
+const pContainer = document.getElementById('particlesContainer');
+function createParticle() {
+  const el = document.createElement('span');
+  el.classList.add('particle');
+  el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+  el.style.left = Math.random() * 100 + 'vw';
+  const dur = 8 + Math.random() * 10, delay = Math.random() * 5;
+  el.style.animationDuration = dur + 's';
+  el.style.animationDelay   = delay + 's';
+  el.style.fontSize = (0.7 + Math.random() * 1.1) + 'rem';
+  pContainer.appendChild(el);
+  setTimeout(() => el.remove(), (dur + delay) * 1000);
+}
+for (let i = 0; i < 14; i++) createParticle();
+setInterval(createParticle, 700);
+
+// ===== NAVIGATION =====
+function openGame(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'g1') g1Init();
+  if (id === 'g2') g2Init();
+  if (id === 'g3') g3Init();
+  if (id === 'g4') g4Reset();
+  if (id === 'g5') g5Init();
+}
+function backToHub() {
+  if (typeof g4StopTimer === 'function') g4StopTimer();
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-hub').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ===== HELPERS =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function renderStars(containerId, total, lit) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const s = document.createElement('span');
+    s.className = 'star' + (i < lit ? ' lit' : '');
+    s.textContent = '⭐';
+    c.appendChild(s);
+  }
+}
+
+// ===========================
+// GAME 1 — TEBAK LIRIK
+// ===========================
+const G1_DATA = [
+  {
+    before: 'Tiap kali aku melihatmu,',
+    blank: 'Jantungku',
+    after: 'selalu berdebar',
+    choices: ['Jantungku','Pikiranku','Langkahku','Tanganku'],
+    correct: 0
+  },
+  {
+    before: 'Biarkanku di sampingmu,',
+    blank: 'berkuranglah',
+    after: 'satu jiwa yang sepi',
+    choices: ['bertambahlah','berkuranglah','terlepaslah','bersatulah'],
+    correct: 1
+  },
+  {
+    before: 'Kamu membuatku',
+    blank: 'jatuh suka',
+    after: 'tanpa permisi',
+    choices: ['jatuh cinta','jatuh suka','jatuh hati','jatuh rindu'],
+    correct: 1
+  },
+  {
+    before: 'Dan aku tak bisa',
+    blank: 'berpura-pura',
+    after: 'tidak merasakannya',
+    choices: ['berpaling','berlari','berpura-pura','bersembunyi'],
+    correct: 2
+  },
+  {
+    before: 'Satu jiwa',
+    blank: 'yang sepi',
+    after: 'kini tak sendiri lagi',
+    choices: ['yang lelah','yang rindu','yang sepi','yang menanti'],
+    correct: 2
+  }
+];
+let g1Index = 0, g1Score = 0, g1Answered = false;
+
+function g1Init() {
+  g1Index = 0; g1Score = 0; g1Answered = false;
+  renderStars('g1-stars', 5, 0);
+  g1Render();
+}
+function g1Render() {
+  const q = G1_DATA[g1Index];
+  document.getElementById('g1-qnum').textContent  = g1Index + 1;
+  document.getElementById('g1-score').textContent = g1Score;
+  document.getElementById('g1-feedback').textContent = '';
+  document.getElementById('g1-next').style.display = 'none';
+  g1Answered = false;
+
+  document.getElementById('g1-lyric').innerHTML =
+    `"${q.before} <span class="lyric-blank">___</span> ${q.after}"`;
+
+  const grid = document.getElementById('g1-choices');
+  grid.innerHTML = '';
+  shuffle(q.choices).forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = choice;
+    btn.onclick = () => g1Answer(btn, choice, q);
+    grid.appendChild(btn);
+  });
+}
+function g1Answer(btn, choice, q) {
+  if (g1Answered) return;
+  g1Answered = true;
+  const correct = q.choices[q.correct];
+  document.querySelectorAll('#g1-choices .choice-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correct) b.classList.add('correct');
+  });
+  const fb = document.getElementById('g1-feedback');
+  if (choice === correct) {
+    btn.classList.add('correct');
+    g1Score++;
+    fb.textContent = '✅ Betul!';
+    fb.style.color = '#4dc864';
+    renderStars('g1-stars', 5, g1Score);
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = `❌ Jawabannya: "${correct}"`;
+    fb.style.color = '#f7a0a0';
+  }
+  document.getElementById('g1-score').textContent = g1Score;
+  if (g1Index < G1_DATA.length - 1) {
+    document.getElementById('g1-next').style.display = 'inline-block';
+  } else {
+    setTimeout(() => g1Finish(), 1200);
+  }
+}
+function g1Next() {
+  g1Index++;
+  g1Render();
+}
+function g1Finish() {
+  const box = document.querySelector('#page-g1 .card-box');
+  const msg = g1Score === 5 ? 'Hafal banget sih kamu 🥺💙' : g1Score >= 3 ? 'Lumayan hafalnya nih!' : 'Kurang dengerin lagunya nih~';
+  box.innerHTML = `
+    <div class="result-screen">
+      <div class="big-emoji">${g1Score === 5 ? '🏆' : g1Score >= 3 ? '🌸' : '💙'}</div>
+      <h2>Selesai!</h2>
+      <p>${msg}</p>
+      <div class="final-score">${g1Score}/5</div>
+      <div class="flex-center gap-1 mt-2">
+        <button class="btn-primary" onclick="openGame('g1')">Main Lagi</button>
+        <button class="btn-back-game" onclick="backToHub()">← Hub</button>
+      </div>
+    </div>`;
+}
+
+// ===========================
+// GAME 2 — KAMU LEBIH SUKA?
+// ===========================
+const G2_DATA = [
+  {
+    q: 'Kamu lebih suka...',
+    opts: ['Dikirimin lagu setiap pagi ☀️','Dapet pesan "lagi mikirin kamu" tengah malam 🌙'],
+    results: [
+      'Kamu tipe yang suka hangatnya pagi bareng orang spesial. Manis banget!',
+      'Kamu suka kejutan tengah malam yang bikin senyum sendiri. Romantis!'
+    ]
+  },
+  {
+    q: 'Kamu lebih suka...',
+    opts: ['Jalan-jalan ke tempat sepi berdua 🌿','Nonton film bareng sambil rebahan 🎬'],
+    results: [
+      'Kamu menikmati momen intim di alam terbuka. Jiwa petualang yang romantis!',
+      'Kamu suka kehangatan di zona nyaman. Cozy dan menyenangkan!'
+    ]
+  },
+  {
+    q: 'Kamu lebih suka...',
+    opts: ['Dipeluk dari belakang tiba-tiba 🤗','Pegangan tangan sambil jalan 🤝'],
+    results: [
+      'Gesture kecil yang bikin kaget itu selalu berhasil bikin kamu meleleh!',
+      'Kamu suka koneksi sederhana yang terasa sepanjang jalan. Warm!'
+    ]
+  },
+  {
+    q: 'Kalau kangen, kamu lebih suka...',
+    opts: ['Langsung bilang "aku kangen" 💬','Kirim meme atau lagu tanpa bilang apa-apa 🎵'],
+    results: [
+      'Jujur dan berani! Kamu percaya kejujuran adalah bentuk cinta.',
+      'Kamu ekspresi perasaannya lewat hal-hal kecil yang penuh makna. Cute!'
+    ]
+  },
+  {
+    q: 'Kamu lebih suka hadiah...',
+    opts: ['Sesuatu yang dibuat sendiri 🎨','Sesuatu yang memang kamu mau dari dulu 🎁'],
+    results: [
+      'Usaha dan waktu yang dicurahkan lebih berharga dari apapun buatmu!',
+      'Kamu senang kalau orang spesial benar-benar memperhatikan keinginanmu!'
+    ]
+  },
+  {
+    q: 'Kamu lebih suka...',
+    opts: ['Saling diem tapi nyaman bareng 🤫','Ngobrol panjang sampai lupa waktu 💬'],
+    results: [
+      'Comfortable silence itu bahasa cinta tersendiri buatmu. Dalam!',
+      'Kamu hidup dari koneksi lewat kata-kata. Setiap cerita terasa berharga!'
+    ]
+  }
+];
+let g2Index = 0;
+
+function g2Init() {
+  g2Index = 0;
+  g2Render();
+}
+function g2Render() {
+  const q = G2_DATA[g2Index];
+  document.getElementById('g2-qnum').textContent = g2Index + 1;
+  document.getElementById('g2-status').textContent = 'Pilih salah satu!';
+  document.getElementById('g2-result').style.display = 'none';
+  document.getElementById('g2-next').style.display = 'none';
+  document.getElementById('g2-question').textContent = q.q;
+  const col = document.getElementById('g2-options');
+  col.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.onclick = () => g2Pick(i);
+    col.appendChild(btn);
+  });
+}
+function g2Pick(i) {
+  const q = G2_DATA[g2Index];
+  document.querySelectorAll('#g2-options .option-btn').forEach((b, idx) => {
+    b.disabled = true;
+    if (idx === i) b.classList.add('selected');
+  });
+  const res = document.getElementById('g2-result');
+  res.textContent = q.results[i];
+  res.style.display = 'block';
+  document.getElementById('g2-status').textContent = '💙';
+  if (g2Index < G2_DATA.length - 1) {
+    document.getElementById('g2-next').style.display = 'inline-block';
+  } else {
+    setTimeout(() => g2Finish(), 1000);
+  }
+}
+function g2Next() { g2Index++; g2Render(); }
+function g2Finish() {
+  const box = document.querySelector('#page-g2 .card-box');
+  box.innerHTML = `
+    <div class="result-screen">
+      <div class="big-emoji">💙</div>
+      <h2>Kamu udah selesai!</h2>
+      <p>Semoga jawaban-jawaban itu suatu hari bisa dibagi sama seseorang yang tepat 🌸</p>
+      <div class="flex-center gap-1 mt-2">
+        <button class="btn-primary" onclick="openGame('g2')">Ulang</button>
+        <button class="btn-back-game" onclick="backToHub()">← Hub</button>
+      </div>
+    </div>`;
+}
+</script>
+
+<script>
+// ===========================
+// GAME 3 — SUSUN KATA
+// ===========================
+const G3_DATA = [
+  { word: 'RINDU',    hint: 'Perasaan saat ingin bertemu seseorang' },
+  { word: 'SAYANG',   hint: 'Rasa kasih yang dalam' },
+  { word: 'DEKAT',    hint: 'Lawan dari jauh' },
+  { word: 'HANGAT',   hint: 'Seperti pelukan yang nyaman' },
+  { word: 'BAHAGIA',  hint: 'Perasaan yang kamu bawa ke mana-mana' }
+];
+let g3Index = 0, g3Score = 0, g3Placed = [], g3Remaining = [];
+
+function g3Init() { g3Index = 0; g3Score = 0; g3Render(); }
+
+function g3Render() {
+  const w = G3_DATA[g3Index];
+  g3Placed = Array(w.word.length).fill(null);
+  g3Remaining = shuffle(w.word.split(''));
+  document.getElementById('g3-qnum').textContent  = g3Index + 1;
+  document.getElementById('g3-score').textContent = g3Score;
+  document.getElementById('g3-hint').textContent  = 'Petunjuk: ' + w.hint;
+  document.getElementById('g3-feedback').textContent = '';
+  document.getElementById('g3-next').style.display = 'none';
+  g3DrawSlots();
+  g3DrawSrc();
+}
+
+function g3DrawSlots() {
+  const c = document.getElementById('g3-slots');
+  c.innerHTML = '';
+  G3_DATA[g3Index].word.split('').forEach((_, i) => {
+    const t = document.createElement('div');
+    t.className = 'letter-tile' + (g3Placed[i] ? ' placed' : ' empty');
+    t.textContent = g3Placed[i] || '';
+    t.dataset.slot = i;
+    if (g3Placed[i]) {
+      t.onclick = () => g3RemoveLetter(i);
+      t.title = 'Klik untuk hapus';
+    }
+    c.appendChild(t);
+  });
+}
+
+function g3DrawSrc() {
+  const c = document.getElementById('g3-src');
+  c.innerHTML = '';
+  g3Remaining.forEach((letter, i) => {
+    const t = document.createElement('div');
+    t.className = 'letter-tile';
+    t.textContent = letter;
+    t.dataset.srcIdx = i;
+    t.onclick = () => g3PlaceLetter(i, letter, t);
+    c.appendChild(t);
+  });
+}
+
+function g3PlaceLetter(srcIdx, letter) {
+  const emptySlot = g3Placed.indexOf(null);
+  if (emptySlot === -1) return;
+  g3Placed[emptySlot] = letter;
+  g3Remaining.splice(srcIdx, 1);
+  g3DrawSlots();
+  g3DrawSrc();
+  if (!g3Placed.includes(null)) g3Check();
+}
+
+function g3RemoveLetter(slotIdx) {
+  const letter = g3Placed[slotIdx];
+  g3Remaining.push(letter);
+  g3Placed[slotIdx] = null;
+  g3DrawSlots();
+  g3DrawSrc();
+  document.getElementById('g3-feedback').textContent = '';
+}
+
+function g3Reset() { g3Render(); }
+
+function g3Check() {
+  const answer = g3Placed.join('');
+  const correct = G3_DATA[g3Index].word;
+  const fb = document.getElementById('g3-feedback');
+  if (answer === correct) {
+    fb.textContent = '✅ Betul! ' + correct;
+    fb.style.color = '#4dc864';
+    g3Score++;
+    document.getElementById('g3-score').textContent = g3Score;
+    if (g3Index < G3_DATA.length - 1) {
+      document.getElementById('g3-next').style.display = 'inline-block';
+    } else {
+      setTimeout(g3Finish, 1000);
+    }
+  } else {
+    fb.textContent = '❌ Belum tepat, coba lagi!';
+    fb.style.color = '#f7a0a0';
+    document.querySelectorAll('#g3-slots .letter-tile').forEach(t => {
+      t.classList.add('wrong-anim');
+      setTimeout(() => t.classList.remove('wrong-anim'), 400);
+    });
+    setTimeout(g3Reset, 600);
+  }
+}
+
+function g3Next() { g3Index++; g3Render(); }
+
+function g3Finish() {
+  const box = document.querySelector('#page-g3 .card-box');
+  const msg = g3Score === 5 ? 'Sempurna! Kamu emang jago!' : `${g3Score} dari 5 kata berhasil disusun!`;
+  box.innerHTML = `
+    <div class="result-screen">
+      <div class="big-emoji">${g3Score === 5 ? '🏆' : '🌸'}</div>
+      <h2>Selesai!</h2>
+      <p>${msg}</p>
+      <div class="final-score">${g3Score}/5</div>
+      <div class="flex-center gap-1 mt-2">
+        <button class="btn-primary" onclick="openGame('g3')">Main Lagi</button>
+        <button class="btn-back-game" onclick="backToHub()">← Hub</button>
+      </div>
+    </div>`;
+}
+
+// ===========================
+// GAME 4 — TANGKAP HATI
+// ===========================
+const HEART_EMOJIS = ['💙','💜','🩵','💛','🤍','🩷'];
+let g4Score = 0, g4TimeLeft = 20, g4Running = false;
+let g4Interval = null, g4SpawnInterval = null;
+
+function g4Reset() {
+  g4StopTimer();
+  g4Score = 0; g4TimeLeft = 20; g4Running = false;
+  document.getElementById('g4-score').textContent = '0';
+  document.getElementById('g4-time').textContent  = '20';
+  document.getElementById('timer-bar').style.width = '100%';
+  document.getElementById('heartArena').innerHTML  = '';
+  document.getElementById('g4-result').style.display    = 'none';
+  document.getElementById('g4-start-wrap').style.display = 'block';
+}
+
+function g4StopTimer() {
+  clearInterval(g4Interval);
+  clearInterval(g4SpawnInterval);
+  g4Running = false;
+}
+
+function g4Start() {
+  g4Reset();
+  document.getElementById('g4-start-wrap').style.display = 'none';
+  g4Running = true;
+
+  // Spawn hati
+  g4SpawnInterval = setInterval(() => {
+    if (!g4Running) return;
+    g4SpawnHeart();
+  }, 700);
+
+  // Timer countdown
+  g4Interval = setInterval(() => {
+    g4TimeLeft--;
+    document.getElementById('g4-time').textContent = g4TimeLeft;
+    document.getElementById('timer-bar').style.width = (g4TimeLeft / 20 * 100) + '%';
+    if (g4TimeLeft <= 0) {
+      g4StopTimer();
+      g4End();
+    }
+  }, 1000);
+}
+
+function g4SpawnHeart() {
+  const arena = document.getElementById('heartArena');
+  const el = document.createElement('div');
+  el.className = 'heart-target';
+  el.textContent = HEART_EMOJIS[Math.floor(Math.random() * HEART_EMOJIS.length)];
+  const maxX = arena.clientWidth  - 50;
+  const maxY = arena.clientHeight - 50;
+  el.style.left = (10 + Math.random() * maxX) + 'px';
+  el.style.top  = (10 + Math.random() * maxY) + 'px';
+  el.onclick = (e) => {
+    if (!g4Running) return;
+    g4Score++;
+    document.getElementById('g4-score').textContent = g4Score;
+    // Floating score text
+    const txt = document.createElement('div');
+    txt.className = 'combo-text';
+    txt.textContent = '+1 💙';
+    txt.style.left = el.style.left;
+    txt.style.top  = el.style.top;
+    arena.appendChild(txt);
+    setTimeout(() => txt.remove(), 800);
+    el.remove();
+  };
+  arena.appendChild(el);
+  // Auto-hilang setelah 1.8 detik
+  setTimeout(() => { if (el.parentNode) el.remove(); }, 1800);
+}
+
+function g4End() {
+  document.getElementById('heartArena').innerHTML = '';
+  document.getElementById('g4-final').textContent = g4Score;
+  document.getElementById('g4-result').style.display = 'block';
+}
+
+// ===========================
+// GAME 5 — TEBAK EMOJI
+// ===========================
+const G5_DATA = [
+  {
+    emoji: '🦋💓😶',
+    question: 'Perasaan apa ini?',
+    choices: ['Gugup tapi seneng', 'Takut sendirian', 'Lagi sakit', 'Mau tidur'],
+    correct: 0,
+    hint: 'Kupu-kupu di perut, jantung berdebar, nggak bisa ngomong...'
+  },
+  {
+    emoji: '🌧️📱🕐',
+    question: 'Situasi apa ini?',
+    choices: ['Hujan-hujanan', 'Nungguin pesan yang nggak bales-bales', 'Telat masuk kerja', 'Nonton film horor'],
+    correct: 1,
+    hint: 'Hujan, megang HP, nunggu...'
+  },
+  {
+    emoji: '👀🙈💗',
+    question: 'Perasaan apa ini?',
+    choices: ['Mengantuk', 'Suka diam-diam tapi pura-pura nggak', 'Malu ketahuan makan banyak', 'Lagi marah'],
+    correct: 1,
+    hint: 'Liat-liatin tapi pura-pura nggak lihat...'
+  },
+  {
+    emoji: '🎵🚶💭',
+    question: 'Lagi ngapain ini?',
+    choices: ['Olahraga pagi', 'Jalan sambil dengerin lagu sambil mikirin seseorang', 'Latihan nyanyi', 'Lagi nyasar'],
+    correct: 1,
+    hint: 'Dengerin lagu, jalan, pikiran kemana-mana...'
+  },
+  {
+    emoji: '😴💬❓',
+    question: 'Situasi apa ini?',
+    choices: ['Ketiduran pas belajar', 'Nunggu diajak ngobrol duluan tapi dua-duanya nunggu', 'Mimpi buruk', 'Lagi bingung ujian'],
+    correct: 1,
+    hint: 'Dua-duanya online, dua-duanya diam...'
+  },
+  {
+    emoji: '🌙⭐💙',
+    question: 'Perasaan apa ini?',
+    choices: ['Takut gelap', 'Tenang dan damai malam-malam sambil kangen seseorang', 'Pengen begadang', 'Lagi liatin langit'],
+    correct: 1,
+    hint: 'Malam, bintang, dan rasa hangat di dada...'
+  }
+];
+let g5Index = 0, g5Score = 0;
+
+function g5Init() { g5Index = 0; g5Score = 0; g5Render(); }
+
+function g5Render() {
+  const q = G5_DATA[g5Index];
+  document.getElementById('g5-qnum').textContent    = g5Index + 1;
+  document.getElementById('g5-score').textContent   = g5Score;
+  document.getElementById('g5-emoji').textContent   = q.emoji;
+  document.getElementById('g5-question').textContent = q.question;
+  document.getElementById('g5-feedback').textContent = '';
+  document.getElementById('g5-hint').textContent     = '';
+  document.getElementById('g5-next').style.display   = 'none';
+
+  const grid = document.getElementById('g5-choices');
+  grid.innerHTML = '';
+  shuffle([...q.choices.map((c, i) => ({c, i}))]).forEach(({c, i}) => {
+    const btn = document.createElement('button');
+    btn.className   = 'choice-btn';
+    btn.textContent = c;
+    btn.onclick     = () => g5Answer(btn, i, q);
+    grid.appendChild(btn);
+  });
+}
+
+function g5Answer(btn, choiceIdx, q) {
+  document.querySelectorAll('#g5-choices .choice-btn').forEach(b => b.disabled = true);
+  const fb   = document.getElementById('g5-feedback');
+  const hint = document.getElementById('g5-hint');
+  // Tandai jawaban benar
+  document.querySelectorAll('#g5-choices .choice-btn').forEach(b => {
+    if (b.textContent === q.choices[q.correct]) b.classList.add('correct');
+  });
+  if (choiceIdx === q.correct) {
+    btn.classList.add('correct');
+    g5Score++;
+    fb.textContent = '✅ Tepat!';
+    fb.style.color = '#4dc864';
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = `❌ Jawabannya: "${q.choices[q.correct]}"`;
+    fb.style.color = '#f7a0a0';
+  }
+  hint.textContent = '💡 ' + q.hint;
+  document.getElementById('g5-score').textContent = g5Score;
+  if (g5Index < G5_DATA.length - 1) {
+    document.getElementById('g5-next').style.display = 'inline-block';
+  } else {
+    setTimeout(g5Finish, 1200);
+  }
+}
+
+function g5Next() { g5Index++; g5Render(); }
+
+function g5Finish() {
+  const box = document.querySelector('#page-g5 .card-box');
+  const msg = g5Score >= 5 ? 'Kamu bisa baca perasaan dengan baik 💙' :
+              g5Score >= 3 ? 'Lumayan peka! 🌸' : 'Masih perlu belajar baca perasaan nih~';
+  box.innerHTML = `
+    <div class="result-screen">
+      <div class="big-emoji">${g5Score >= 5 ? '🏆' : '💙'}</div>
+      <h2>Kamu selesai!</h2>
+      <p>${msg}</p>
+      <div class="final-score">${g5Score}/6</div>
+      <div class="flex-center gap-1 mt-2">
+        <button class="btn-primary" onclick="openGame('g5')">Main Lagi</button>
+        <button class="btn-back-game" onclick="backToHub()">← Hub</button>
+      </div>
+    </div>`;
+}
+
+// ===========================
+// MUSIK (persistent localStorage)
+// ===========================
+const MUSIC_URL = 'https://archive.org/download/tulus-manusia/06.%20Jatuh%20Suka.mp3';
+let audio = null, isPlaying = false;
+let saveIntervalLanjut = null;
+
+function initMusic() {
+  if (!audio) {
+    audio = new Audio(MUSIC_URL);
+    audio.loop = false; // Tidak loop — biar ada alert saat selesai
+    audio.volume = 0.4;
+    // Ketika lagu selesai
+    audio.addEventListener('ended', function() {
+      isPlaying = false;
+      clearInterval(saveIntervalLanjut);
+      localStorage.setItem('musikAktif', 'tidak');
+      localStorage.removeItem('musikPosisi');
+      const btn = document.getElementById('musicBtn');
+      if (btn) { btn.textContent = '🎵'; btn.classList.remove('playing'); }
+      const note = document.getElementById('musicNote');
+      if (note) note.style.display = '';
+      showMusicStopAlertLanjut();
+    });
+  }
+}
+
+function showMusicStopAlertLanjut() {
+  const alertEl = document.getElementById('musikStopAlertLanjut');
+  if (alertEl) alertEl.style.display = 'flex';
+}
+
+function lanjutMusikLanjut() {
+  document.getElementById('musikStopAlertLanjut').style.display = 'none';
+  initMusic();
+  audio.currentTime = 0;
+  audio.play().then(() => {
+    isPlaying = true;
+    const btn = document.getElementById('musicBtn');
+    if (btn) { btn.textContent = '🎶'; btn.classList.add('playing'); }
+    const note = document.getElementById('musicNote');
+    if (note) note.style.display = 'none';
+    localStorage.setItem('musikAktif', 'ya');
+    localStorage.setItem('musikPosisi', '0');
+    startSavingPosition();
+  }).catch(() => {});
+}
+
+function tanpaMusikLanjut() {
+  document.getElementById('musikStopAlertLanjut').style.display = 'none';
+  localStorage.setItem('musikAktif', 'tidak');
+  localStorage.removeItem('musikPosisi');
+}
+
+function startSavingPosition() {
+  clearInterval(saveIntervalLanjut);
+  saveIntervalLanjut = setInterval(() => {
+    if (audio && isPlaying) localStorage.setItem('musikPosisi', audio.currentTime);
+  }, 200);
+}
+window.addEventListener('load', () => {
+  const btn = document.getElementById('musicBtn');
+  const note = document.getElementById('musicNote');
+  if (localStorage.getItem('musikAktif') === 'ya') {
+    initMusic();
+    const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
+    audio.currentTime = savedPos;
+    audio.play().then(() => {
+      isPlaying = true;
+      btn.textContent = '🎶';
+      btn.classList.add('playing');
+      note.style.display = 'none';
+      startSavingPosition();
+    }).catch(() => {});
+  }
+});
+function toggleMusic() {
+  const btn = document.getElementById('musicBtn');
+  const note = document.getElementById('musicNote');
+  initMusic();
+  if (isPlaying) {
+    audio.pause(); isPlaying = false;
+    clearInterval(saveIntervalLanjut);
+    btn.textContent = '🎵'; btn.classList.remove('playing');
+    note.style.display = '';
+    localStorage.setItem('musikAktif', 'tidak');
+    localStorage.removeItem('musikPosisi');
+  } else {
+    const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
+    audio.currentTime = savedPos;
+    audio.play().catch(() => {});
+    isPlaying = true;
+    btn.textContent = '🎶'; btn.classList.add('playing');
+    note.style.display = 'none';
+    localStorage.setItem('musikAktif', 'ya');
+    startSavingPosition();
+  }
+}
+</script>
+
+  <!-- ===== ALERT MUSIK SELESAI ===== -->
+  <div id="musikStopAlertLanjut" style="
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  ">
+    <div style="
+      background: linear-gradient(135deg, #060f1e 0%, #0d2347 100%);
+      border: 1.5px solid rgba(74,144,217,0.4);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: alertInLanjut 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    ">
+      <style>
+        @keyframes alertInLanjut {
+          from { opacity: 0; transform: scale(0.85) translateY(20px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      </style>
+      <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">🎵</div>
+      <h3 style="
+        font-family: 'Dancing Script', cursive;
+        font-size: 1.6rem;
+        color: #7ec8f7;
+        margin-bottom: 0.7rem;
+      ">Musiknya Udah Selesai~</h3>
+      <p style="
+        color: #a8c8e8;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin-bottom: 1.8rem;
+      ">Mau lanjut dengerin musik lagi,<br>atau lanjut tanpa musik?</p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <button onclick="lanjutMusikLanjut()" style="
+          padding: 0.75rem 1.5rem;
+          background: linear-gradient(135deg, #1a5fa8, #4a90d9);
+          border: none;
+          border-radius: 50px;
+          color: #fff;
+          font-size: 0.88rem;
+          font-family: 'Lato', sans-serif;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 4px 20px rgba(74,144,217,0.4);
+          transition: transform 0.15s;
+        " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          🎵 Lanjut Musik
+        </button>
+        <button onclick="tanpaMusikLanjut()" style="
+          padding: 0.75rem 1.5rem;
+          background: rgba(255,255,255,0.08);
+          border: 1.5px solid rgba(255,255,255,0.2);
+          border-radius: 50px;
+          color: #a8c8e8;
+          font-size: 0.88rem;
+          font-family: 'Lato', sans-serif;
+          cursor: pointer;
+          transition: background 0.2s;
+        " onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+          Tanpa Musik
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

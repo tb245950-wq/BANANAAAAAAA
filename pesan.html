@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pesan Spesial 💙</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background: #0a1628; overflow-x: hidden; }
+
+    /* ===== FLOWER RAIN OVERLAY ===== */
+    #flowerOverlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, #020810 0%, #060f1e 100%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease;
+    }
+    #flowerOverlay.hide { opacity: 0; pointer-events: none; }
+
+    .overlay-text {
+      position: relative;
+      z-index: 10001;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      pointer-events: none;
+    }
+    .overlay-text.show { opacity: 1; transform: translateY(0); }
+    .overlay-text h2 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      color: #7ec8f7;
+      text-shadow: 0 0 30px rgba(74,144,217,0.8), 0 0 60px rgba(74,144,217,0.4);
+      margin-bottom: 0.5rem;
+    }
+    .overlay-text p { color: #a8c8e8; font-size: 1rem; letter-spacing: 2px; }
+
+    #skipBtn {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      z-index: 10002;
+      background: rgba(74,144,217,0.15);
+      border: 1px solid rgba(74,144,217,0.4);
+      color: #7ec8f7;
+      padding: 0.5rem 1.3rem;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: background 0.2s;
+    }
+    #skipBtn:hover { background: rgba(74,144,217,0.3); }
+
+    #mainContent { opacity: 0; transition: opacity 1s ease; }
+    #mainContent.show { opacity: 1; }
+
+    .secret-hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #060f1e 0%, #0d2347 60%, #1a3a6b 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 3rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .secret-content {
+      z-index: 2;
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      animation: fadeUp 1s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== ORBIT SCENE (canvas) ===== */
+    .orbit-scene {
+      position: relative;
+      width: min(700px, 96vw);
+      height: min(700px, 96vw);
+      margin: 0 auto;
+    }
+    #orbitCanvas {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      display: block;
+    }
+
+    /* Title & back button */
+    .orbit-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2rem, 6vw, 3rem);
+      color: #fff;
+      text-shadow: 0 4px 20px rgba(74,144,217,0.5);
+      margin-bottom: 0.5rem;
+    }
+    .orbit-sub {
+      color: #a8c8e8;
+      font-size: 0.95rem;
+      margin-bottom: 2.5rem;
+      opacity: 0.85;
+    }
+    .orbit-hint {
+      color: #6a9ab8;
+      font-size: 0.78rem;
+      margin-top: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    /* ===== TOMBOL AKSI ===== */
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+      position: relative;
+    }
+
+    .btn-no {
+      position: relative;
+      padding: 0.8rem 2rem;
+      background: rgba(217,74,74,0.12);
+      border: 1.5px solid rgba(217,74,74,0.4);
+      color: #f7a0a0;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+      user-select: none;
+    }
+    .btn-no:hover { background: rgba(217,74,74,0.2); }
+
+    .btn-yes {
+      display: inline-block;
+      padding: 0.8rem 2.2rem;
+      background: rgba(74,144,217,0.2);
+      border: 1.5px solid rgba(74,144,217,0.5);
+      color: #7ec8f7;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-yes:hover { background: rgba(74,144,217,0.35); transform: translateY(-2px); }
+
+    /* ===== LIGHTBOX POPUP ===== */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(2,8,16,0.92);
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(6px);
+      padding: 1rem;
+    }
+    #lightbox.active { opacity: 1; pointer-events: all; }
+
+    .lightbox-inner {
+      position: relative;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      animation: lbIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes lbIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    #lightboxImg {
+      width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      border-radius: 20px;
+      border: 3px solid #4a90d9;
+      box-shadow: 0 0 40px rgba(74,144,217,0.5);
+      display: block;
+      margin: 0 auto;
+    }
+    #lightboxLabel {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.4rem;
+      color: #7ec8f7;
+      margin-top: 1rem;
+    }
+    .lb-close {
+      position: absolute;
+      top: -14px; right: -14px;
+      background: #1a5fa8;
+      border: none;
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .lb-close:hover { background: #4a90d9; transform: rotate(90deg); }
+
+    /* Nav arrows */
+    .lb-nav {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      background: rgba(26,95,168,0.7);
+      border: none;
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .lb-nav:hover { background: #4a90d9; }
+    .lb-prev { left: -52px; }
+    .lb-next { right: -52px; }
+
+    /* ===== MUSIC BUTTON ===== */
+    #musicBtn {
+      position: relative;
+      z-index: 8000;
+      background: rgba(26,95,168,0.5);
+      border: 1.5px solid rgba(74,144,217,0.5);
+      border-radius: 50%;
+      width: 46px; height: 46px;
+      display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    #musicBtn:hover { background: rgba(74,144,217,0.6); transform: scale(1.1); }
+    #musicBtn.playing { animation: musicPulse 1.5s ease-in-out infinite; }
+    @keyframes musicPulse {
+      0%, 100% { box-shadow: 0 4px 15px rgba(74,144,217,0.4); }
+      50%       { box-shadow: 0 4px 30px rgba(74,144,217,0.8); }
+    }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 500px) {
+      .orbit-scene { width: 260px; height: 260px; }
+      .orbit-ring  { width: 230px; height: 230px; }
+      .center-ball { width: 70px; height: 70px; }
+      .center-ball::after { font-size: 1.5rem; }
+      .lb-prev { left: -12px; }
+      .lb-next { right: -12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MUSIC BUTTON + NOTE -->
+  <div id="musicWrapper" style="
+    position: fixed; top: 1.2rem; right: 1.2rem;
+    z-index: 8000;
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    flex-direction: row-reverse;
+  ">
+    <button id="musicBtn" onclick="toggleMusic()" title="Musik">🎵</button>
+    <span id="musicNote" style="
+      font-family: 'Lato', sans-serif;
+      font-size: 0.72rem;
+      color: rgba(168,200,232,0.75);
+      background: rgba(6,15,30,0.6);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(74,144,217,0.2);
+      border-radius: 20px;
+      padding: 0.3rem 0.75rem;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+    ">🎵 kalau mau sambil lagu klik tombol musik</span>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" onclick="closeLightbox(event)">
+    <div class="lightbox-inner">
+      <button class="lb-close" onclick="closeLightboxDirect()">✕</button>
+      <button class="lb-nav lb-prev" onclick="lbNav(-1)">‹</button>
+      <button class="lb-nav lb-next" onclick="lbNav(+1)">›</button>
+      <img id="lightboxImg" src="" alt="" />
+      <div id="lightboxLabel"></div>
+    </div>
+  </div>
+
+  <!-- FLOWER RAIN OVERLAY -->
+  <div id="flowerOverlay">
+    <canvas id="flowerCanvas" style="position:fixed;inset:0;z-index:10000;pointer-events:none;"></canvas>
+    <div class="overlay-text" id="overlayText">
+      <h2>Untuk Banana... 💙</h2>
+      <p>Ada sesuatu spesial menantimu</p>
+    </div>
+  </div>
+  <button id="skipBtn" onclick="skipAnimation()">Lewati →</button>
+
+  <!-- MAIN CONTENT -->
+  <div id="mainContent">
+  <div class="hearts-bg" id="heartsBg"></div>
+
+  <section class="secret-hero">
+    <div class="secret-content">
+
+      <h1 class="orbit-title">Untuk Banana</h1>
+      <p class="orbit-sub">Your denial will eat away at everything you want to do.</p>
+
+      <!-- ORBIT SCENE — dirender via canvas -->
+      <div class="orbit-scene" id="orbitScene">
+        <canvas id="orbitCanvas"></canvas>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-no" id="btnNo" onmouseenter="evadeButton(this)" ontouchstart="evadeButton(this)">Ga Mau Lanjut</button>
+        <a href="lanjut.html" class="btn-yes" onclick="savePositionNow()">Lanjutt →</a>
+      </div>
+    </div>
+  </section>
+  </div><!-- end #mainContent -->
+
+  <script>
+    // ===== FLOWER RAIN (Canvas) =====
+    const canvas = document.getElementById('flowerCanvas');
+    const ctx    = canvas.getContext('2d');
+    let flowers  = [];
+    let animId;
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Blue palette
+    const COLORS = [
+      '#7ec8f7','#4a90d9','#1a5fa8','#a8d8f0',
+      '#5bb8ff','#2d7dd2','#b3e0ff','#0d6efd'
+    ];
+
+    // Draw a simple 5-petal flower on canvas
+    function drawFlower(x, y, r, color, rotation, opacity) {
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+
+      // Petals
+      ctx.fillStyle = color;
+      for (let i = 0; i < 5; i++) {
+        ctx.save();
+        ctx.rotate((i * 2 * Math.PI) / 5);
+        ctx.beginPath();
+        ctx.ellipse(0, -r * 0.75, r * 0.35, r * 0.6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+      // Center
+      ctx.fillStyle = '#e0f4ff';
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.28, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function spawnFlower() {
+      const r = 8 + Math.random() * 18;
+      flowers.push({
+        x:        Math.random() * canvas.width,
+        y:        -r * 2,
+        r:        r,
+        color:    COLORS[Math.floor(Math.random() * COLORS.length)],
+        speed:    1.2 + Math.random() * 2.5,
+        drift:    (Math.random() - 0.5) * 0.8,
+        rotation: Math.random() * Math.PI * 2,
+        spin:     (Math.random() - 0.5) * 0.04,
+        opacity:  0.7 + Math.random() * 0.3,
+        sway:     Math.random() * Math.PI * 2,
+        swayAmp:  0.5 + Math.random() * 1.5,
+      });
+    }
+
+    // Spawn a burst of flowers immediately
+    for (let i = 0; i < 60; i++) {
+      spawnFlower();
+      flowers[flowers.length - 1].y = Math.random() * canvas.height; // scatter initial positions
+    }
+
+    let spawnInterval = setInterval(spawnFlower, 60);
+
+    function animateFlowers() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flowers.forEach(f => {
+        f.sway    += 0.02;
+        f.x       += f.drift + Math.sin(f.sway) * f.swayAmp;
+        f.y       += f.speed;
+        f.rotation += f.spin;
+        drawFlower(f.x, f.y, f.r, f.color, f.rotation, f.opacity);
+      });
+      // Remove flowers that fell off screen
+      flowers = flowers.filter(f => f.y < canvas.height + 50);
+      animId = requestAnimationFrame(animateFlowers);
+    }
+    animateFlowers();
+
+    // Show overlay text after short delay
+    setTimeout(() => {
+      document.getElementById('overlayText').classList.add('show');
+    }, 600);
+
+    // Auto-end animation after 4 seconds
+    setTimeout(revealContent, 4200);
+
+    function skipAnimation() {
+      revealContent();
+    }
+
+    function revealContent() {
+      clearInterval(spawnInterval);
+      // Fade out remaining flowers quickly
+      const overlay = document.getElementById('flowerOverlay');
+      const skipBtn = document.getElementById('skipBtn');
+      overlay.classList.add('hide');
+      skipBtn.style.display = 'none';
+
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        cancelAnimationFrame(animId);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Show main content
+        const main = document.getElementById('mainContent');
+        main.classList.add('show');
+        document.getElementById('musicWrapper').style.display = 'flex';
+        resumeMusicIfActive();
+        startFloatingHearts();
+      }, 850);
+    }
+
+    // ===== FLOATING HEARTS (after overlay gone) =====
+    function startFloatingHearts() {
+      const container = document.getElementById('heartsBg');
+      const emojis = ['💙', '🌸', '✨', '💫', '⭐', '🌊'];
+      function create() {
+        const el = document.createElement('span');
+        el.classList.add('heart-particle');
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = Math.random() * 100 + 'vw';
+        const dur   = 7 + Math.random() * 8;
+        const delay = Math.random() * 4;
+        el.style.animationDuration = dur + 's';
+        el.style.animationDelay   = delay + 's';
+        el.style.fontSize = (0.7 + Math.random() * 1) + 'rem';
+        container.appendChild(el);
+        setTimeout(() => el.remove(), (dur + delay) * 1000);
+      }
+      for (let i = 0; i < 12; i++) create();
+      setInterval(create, 800);
+    }
+
+    // ===== ORBIT PHOTOS =====
+    // Ganti src dengan path foto aslimu nanti
+    const PHOTOS = [
+      { src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJz48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9J2cnIGN4PSc0MCUnIGN5PSczNSUnPjxzdG9wIG9mZnNldD0nMCUnIHN0b3AtY29sb3I9JyNhOGQ4ZmYnLz48c3RvcCBvZmZzZXQ9JzEwMCUnIHN0b3AtY29sb3I9JyMxYTVmYTgnLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48Y2lyY2xlIGN4PScxMDAnIGN5PScxMDAnIHI9JzEwMCcgZmlsbD0ndXJsKCNnKScvPjx0ZXh0IHg9JzEwMCcgeT0nODgnIGZvbnQtc2l6ZT0nNTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnPvCfjLg8L3RleHQ+PHRleHQgeD0nMTAwJyB5PScxNDgnIGZvbnQtc2l6ZT0nMjAnIGZvbnQtZmFtaWx5PSdBcmlhbCcgZmlsbD0nd2hpdGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtd2VpZ2h0PSdib2xkJz5Gb3RvIDE8L3RleHQ+PC9zdmc+', label: 'Foto 1' },
+      { src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJz48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9J2cnIGN4PSc0MCUnIGN5PSczNSUnPjxzdG9wIG9mZnNldD0nMCUnIHN0b3AtY29sb3I9JyNhOGQ4ZmYnLz48c3RvcCBvZmZzZXQ9JzEwMCUnIHN0b3AtY29sb3I9JyMyZDdkZDInLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48Y2lyY2xlIGN4PScxMDAnIGN5PScxMDAnIHI9JzEwMCcgZmlsbD0ndXJsKCNnKScvPjx0ZXh0IHg9JzEwMCcgeT0nODgnIGZvbnQtc2l6ZT0nNTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnPvCfkpk8L3RleHQ+PHRleHQgeD0nMTAwJyB5PScxNDgnIGZvbnQtc2l6ZT0nMjAnIGZvbnQtZmFtaWx5PSdBcmlhbCcgZmlsbD0nd2hpdGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtd2VpZ2h0PSdib2xkJz5Gb3RvIDI8L3RleHQ+PC9zdmc+', label: 'Foto 2' },
+      { src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJz48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9J2cnIGN4PSc0MCUnIGN5PSczNSUnPjxzdG9wIG9mZnNldD0nMCUnIHN0b3AtY29sb3I9JyNhOGQ4ZmYnLz48c3RvcCBvZmZzZXQ9JzEwMCUnIHN0b3AtY29sb3I9JyMwZDRmOGMnLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48Y2lyY2xlIGN4PScxMDAnIGN5PScxMDAnIHI9JzEwMCcgZmlsbD0ndXJsKCNnKScvPjx0ZXh0IHg9JzEwMCcgeT0nODgnIGZvbnQtc2l6ZT0nNTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnPuKcqDwvdGV4dD48dGV4dCB4PScxMDAnIHk9JzE0OCcgZm9udC1zaXplPScyMCcgZm9udC1mYW1pbHk9J0FyaWFsJyBmaWxsPSd3aGl0ZScgdGV4dC1hbmNob3I9J21pZGRsZScgZm9udC13ZWlnaHQ9J2JvbGQnPkZvdG8gMzwvdGV4dD48L3N2Zz4=', label: 'Foto 3' },
+      { src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJz48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9J2cnIGN4PSc0MCUnIGN5PSczNSUnPjxzdG9wIG9mZnNldD0nMCUnIHN0b3AtY29sb3I9JyNhOGQ4ZmYnLz48c3RvcCBvZmZzZXQ9JzEwMCUnIHN0b3AtY29sb3I9JyMzYThmZDEnLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48Y2lyY2xlIGN4PScxMDAnIGN5PScxMDAnIHI9JzEwMCcgZmlsbD0ndXJsKCNnKScvPjx0ZXh0IHg9JzEwMCcgeT0nODgnIGZvbnQtc2l6ZT0nNTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnPvCfjIo8L3RleHQ+PHRleHQgeD0nMTAwJyB5PScxNDgnIGZvbnQtc2l6ZT0nMjAnIGZvbnQtZmFtaWx5PSdBcmlhbCcgZmlsbD0nd2hpdGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtd2VpZ2h0PSdib2xkJz5Gb3RvIDQ8L3RleHQ+PC9zdmc+', label: 'Foto 4' },
+      { src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJz48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9J2cnIGN4PSc0MCUnIGN5PSczNSUnPjxzdG9wIG9mZnNldD0nMCUnIHN0b3AtY29sb3I9JyNhOGQ4ZmYnLz48c3RvcCBvZmZzZXQ9JzEwMCUnIHN0b3AtY29sb3I9JyMxNTY1YzAnLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48Y2lyY2xlIGN4PScxMDAnIGN5PScxMDAnIHI9JzEwMCcgZmlsbD0ndXJsKCNnKScvPjx0ZXh0IHg9JzEwMCcgeT0nODgnIGZvbnQtc2l6ZT0nNTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnPuKtkDwvdGV4dD48dGV4dCB4PScxMDAnIHk9JzE0OCcgZm9udC1zaXplPScyMCcgZm9udC1mYW1pbHk9J0FyaWFsJyBmaWxsPSd3aGl0ZScgdGV4dC1hbmNob3I9J21pZGRsZScgZm9udC13ZWlnaHQ9J2JvbGQnPkZvdG8gNTwvdGV4dD48L3N2Zz4=', label: 'Foto 5' }
+    ];
+
+    // ===== ORBIT CANVAS 3D =====
+    function buildOrbit() {
+      const oc    = document.getElementById('orbitCanvas');
+      const octx  = oc.getContext('2d');
+      const SIZE  = 700;
+      const CX    = SIZE / 2, CY = SIZE / 2;
+      const TOTAL = PHOTOS.length;
+
+      const RX    = 300;
+      const RY    = 88;
+
+      const BALL_R = 65;
+      const SPEED  = 0.00032;
+
+      oc.width  = SIZE;
+      oc.height = SIZE;
+
+      // Preload images
+      const imgs = PHOTOS.map(p => {
+        const img = new Image();
+        img.src = p.src;
+        return img;
+      });
+
+      let angle    = 0;
+      let hovered  = -1;
+      let lastTime = null;
+
+      // ---- Draw center ball ----
+      function drawCenterBall() {
+        const t     = Date.now() / 1000;
+        const pulse = 1 + Math.sin(t * 2) * 0.05;
+        const r     = BALL_R * pulse;
+
+        [0.05, 0.09, 0.13].forEach((alpha, i) => {
+          octx.save();
+          octx.globalAlpha = alpha;
+          octx.fillStyle   = '#4a90d9';
+          octx.shadowColor = '#4a90d9';
+          octx.shadowBlur  = 40;
+          octx.beginPath();
+          octx.arc(CX, CY, r + 20 * (3 - i), 0, Math.PI * 2);
+          octx.fill();
+          octx.restore();
+        });
+
+        const grad = octx.createRadialGradient(CX - r*0.3, CY - r*0.3, r*0.05, CX, CY, r);
+        grad.addColorStop(0,   '#d0eeff');
+        grad.addColorStop(0.4, '#4a90d9');
+        grad.addColorStop(1,   '#060f1e');
+        octx.save();
+        octx.shadowColor = '#4a90d9';
+        octx.shadowBlur  = 28;
+        octx.fillStyle   = grad;
+        octx.beginPath();
+        octx.arc(CX, CY, r, 0, Math.PI * 2);
+        octx.fill();
+        octx.restore();
+
+        octx.font         = `${Math.round(r * 0.85)}px serif`;
+        octx.textAlign    = 'center';
+        octx.textBaseline = 'middle';
+        octx.globalAlpha  = 1;
+        octx.fillText('💙', CX, CY + 2);
+      }
+
+      // ---- Draw orbit ring ----
+      function drawOrbitRing() {
+        octx.save();
+        octx.setLineDash([4, 12]);
+        octx.strokeStyle = 'rgba(74,144,217,0.18)';
+        octx.lineWidth   = 1;
+        octx.beginPath();
+        octx.ellipse(CX, CY, RX, RY, 0, 0, Math.PI * 2);
+        octx.stroke();
+        octx.restore();
+      }
+
+      // ---- Draw one photo ----
+      // scale: 0.45 (belakang) → 1.15 (depan) — range lebih ekstrem
+      function drawPhoto(img, px, py, scale, alpha, isHovered) {
+        // Base photo radius sebelum scale
+        const BASE_R = 62;
+        const r = (isHovered ? BASE_R + 5 : BASE_R) * scale;
+
+        octx.save();
+        octx.globalAlpha = alpha;
+        octx.shadowColor = isHovered ? '#7ec8f7' : '#4a90d9';
+        octx.shadowBlur  = (isHovered ? 22 : 12) * scale;
+
+        // Clip circle untuk gambar
+        octx.beginPath();
+        octx.arc(px, py, r, 0, Math.PI * 2);
+        octx.clip();
+
+        if (img.complete && img.naturalWidth > 0) {
+          octx.drawImage(img, px - r, py - r, r * 2, r * 2);
+        } else {
+          const pg = octx.createRadialGradient(px - r*0.3, py - r*0.3, r*0.05, px, py, r);
+          pg.addColorStop(0, '#a8d8ff');
+          pg.addColorStop(1, '#0d2347');
+          octx.fillStyle = pg;
+          octx.fillRect(px - r, py - r, r * 2, r * 2);
+        }
+        octx.restore();
+
+        // Border
+        octx.save();
+        octx.globalAlpha = alpha;
+        octx.strokeStyle = isHovered ? '#7ec8f7' : '#4a90d9';
+        octx.lineWidth   = (isHovered ? 3.5 : 2.5) * Math.max(scale, 0.5);
+        octx.shadowColor = isHovered ? '#7ec8f7' : '#4a90d9';
+        octx.shadowBlur  = 10 * scale;
+        octx.beginPath();
+        octx.arc(px, py, r, 0, Math.PI * 2);
+        octx.stroke();
+        octx.restore();
+      }
+
+      // ---- Main render loop ----
+      function frame(ts) {
+        if (!lastTime) lastTime = ts;
+        const dt = ts - lastTime;
+        lastTime = ts;
+        angle += SPEED * dt;
+
+        octx.clearRect(0, 0, SIZE, SIZE);
+
+        const items = [];
+        for (let i = 0; i < TOTAL; i++) {
+          const a   = angle + (i / TOTAL) * Math.PI * 2;
+          const px  = CX + Math.cos(a) * RX;
+          const py  = CY + Math.sin(a) * RY;
+          const sinA = Math.sin(a); // -1 = belakang, +1 = depan
+
+          // Scale: 0.42 (paling belakang) → 1.18 (paling depan)
+          const scale = 0.42 + (sinA + 1) / 2 * 0.76;
+          // Alpha: 0.30 (belakang) → 1.0 (depan)
+          const alpha = 0.30 + (sinA + 1) / 2 * 0.70;
+
+          items.push({ i, px, py, scale, alpha, sinA });
+        }
+
+        // Foto paling belakang digambar paling dulu
+        items.sort((a, b) => a.sinA - b.sinA);
+
+        const behind = items.filter(it => it.sinA < 0);
+        const front  = items.filter(it => it.sinA >= 0);
+
+        drawOrbitRing();
+        behind.forEach(it => drawPhoto(imgs[it.i], it.px, it.py, it.scale, it.alpha, it.i === hovered));
+        drawCenterBall();
+        front.forEach(it  => drawPhoto(imgs[it.i], it.px, it.py, it.scale, it.alpha, it.i === hovered));
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+
+      // ---- Hit detection ----
+      function getPhotoAt(mx, my) {
+        const items = [];
+        for (let i = 0; i < TOTAL; i++) {
+          const a    = angle + (i / TOTAL) * Math.PI * 2;
+          const px   = CX + Math.cos(a) * RX;
+          const py   = CY + Math.sin(a) * RY;
+          const scale = 0.42 + (Math.sin(a) + 1) / 2 * 0.76;
+          items.push({ i, px, py, r: (68 * scale) + 10 });
+        }
+        items.sort((a, b) => b.r - a.r);
+        for (const it of items) {
+          const dx = mx - it.px, dy = my - it.py;
+          if (Math.sqrt(dx*dx + dy*dy) <= it.r) return it.i;
+        }
+        return -1;
+      }
+
+      function getXY(e) {
+        const rect   = oc.getBoundingClientRect();
+        const scaleX = SIZE / rect.width;
+        const scaleY = SIZE / rect.height;
+        const cx = e.clientX ?? e.touches[0].clientX;
+        const cy = e.clientY ?? e.touches[0].clientY;
+        return [(cx - rect.left) * scaleX, (cy - rect.top) * scaleY];
+      }
+
+      oc.addEventListener('mousemove', e => {
+        const [mx, my] = getXY(e);
+        hovered = getPhotoAt(mx, my);
+        oc.style.cursor = hovered >= 0 ? 'pointer' : 'default';
+      });
+      oc.addEventListener('mouseleave', () => { hovered = -1; });
+      oc.addEventListener('click', e => {
+        const [mx, my] = getXY(e);
+        const idx = getPhotoAt(mx, my);
+        if (idx >= 0) openLightbox(idx);
+      });
+    }
+
+    buildOrbit();
+
+    // ===== LIGHTBOX =====
+    let currentPhoto = 0;
+
+    function openLightbox(index) {
+      currentPhoto = index;
+      updateLightbox();
+      document.getElementById('lightbox').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function updateLightbox() {
+      const p = PHOTOS[currentPhoto];
+      document.getElementById('lightboxImg').src   = p.src;
+      document.getElementById('lightboxImg').alt   = p.label;
+      document.getElementById('lightboxLabel').textContent = p.label;
+    }
+
+    function lbNav(dir) {
+      currentPhoto = (currentPhoto + dir + PHOTOS.length) % PHOTOS.length;
+      const img = document.getElementById('lightboxImg');
+      img.style.opacity = '0';
+      img.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        updateLightbox();
+        img.style.transition = 'opacity 0.25s, transform 0.25s';
+        img.style.opacity = '1';
+        img.style.transform = 'scale(1)';
+      }, 150);
+    }
+
+    function closeLightbox(e) {
+      if (e.target === document.getElementById('lightbox')) closeLightboxDirect();
+    }
+    function closeLightboxDirect() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      const lb = document.getElementById('lightbox');
+      if (!lb.classList.contains('active')) return;
+      if (e.key === 'Escape')      closeLightboxDirect();
+      if (e.key === 'ArrowLeft')   lbNav(-1);
+      if (e.key === 'ArrowRight')  lbNav(+1);
+    });
+
+    // ===== TOMBOL GA MAU LANJUT (ngehindar) =====
+    function evadeButton(btn) {
+      const parent = btn.closest('.btn-group');
+      const parentRect = parent.getBoundingClientRect();
+      const margin = 20;
+
+      // Batas area layar
+      const maxX = window.innerWidth  - btn.offsetWidth  - margin;
+      const maxY = window.innerHeight - btn.offsetHeight - margin;
+
+      // Random posisi baru di dalam viewport
+      const newX = margin + Math.random() * (maxX - margin);
+      const newY = margin + Math.random() * (maxY - margin);
+
+      btn.style.position = 'fixed';
+      btn.style.left     = newX + 'px';
+      btn.style.top      = newY + 'px';
+      btn.style.zIndex   = '9999';
+      btn.style.transition = 'left 0.18s ease, top 0.18s ease';
+    }
+
+    // ===== MUSIC (persistent via localStorage) =====
+    const MUSIC_URL = 'https://archive.org/download/tulus-manusia/06.%20Jatuh%20Suka.mp3';
+    let audio = null;
+    let isPlaying = false;
+    let saveIntervalPesan = null;
+
+    function initMusic() {
+      if (!audio) {
+        audio = new Audio(MUSIC_URL);
+        audio.loop   = false; // Tidak loop — biar ada alert saat selesai
+        audio.volume = 0.4;
+        // Ketika lagu selesai, tampilkan alert
+        audio.addEventListener('ended', function() {
+          isPlaying = false;
+          clearInterval(saveIntervalPesan);
+          localStorage.setItem('musikAktif', 'tidak');
+          localStorage.removeItem('musikPosisi');
+          const btn = document.getElementById('musicBtn');
+          if (btn) { btn.textContent = '🎵'; btn.classList.remove('playing'); }
+          const note = document.getElementById('musicNote');
+          if (note) note.style.display = '';
+          showMusicStopAlertPesan();
+        });
+      }
+    }
+
+    function showMusicStopAlertPesan() {
+      const alertEl = document.getElementById('musikStopAlertPesan');
+      if (alertEl) alertEl.style.display = 'flex';
+    }
+
+    function lanjutMusikPesan() {
+      document.getElementById('musikStopAlertPesan').style.display = 'none';
+      initMusic();
+      audio.currentTime = 0;
+      audio.play().then(() => {
+        isPlaying = true;
+        const btn = document.getElementById('musicBtn');
+        if (btn) { btn.textContent = '🎶'; btn.classList.add('playing'); }
+        const note = document.getElementById('musicNote');
+        if (note) note.style.display = 'none';
+        localStorage.setItem('musikAktif', 'ya');
+        localStorage.setItem('musikPosisi', '0');
+        startSavingPosition();
+      }).catch(() => {});
+    }
+
+    function tanpaMusikPesan() {
+      document.getElementById('musikStopAlertPesan').style.display = 'none';
+      localStorage.setItem('musikAktif', 'tidak');
+      localStorage.removeItem('musikPosisi');
+    }
+
+    // Simpan posisi REALTIME setiap 200ms (lebih akurat)
+    function startSavingPosition() {
+      clearInterval(saveIntervalPesan);
+      saveIntervalPesan = setInterval(() => {
+        if (audio && isPlaying) {
+          localStorage.setItem('musikPosisi', audio.currentTime);
+        }
+      }, 200);
+    }
+
+    // Dipanggil setelah overlay hilang
+    function resumeMusicIfActive() {
+      if (localStorage.getItem('musikAktif') === 'ya') {
+        initMusic();
+        const btn      = document.getElementById('musicBtn');
+        const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
+        // Set currentTime langsung — tanpa tunggu event
+        audio.currentTime = savedPos;
+        audio.play().then(() => {
+          isPlaying = true;
+          btn.textContent = '🎶';
+          btn.classList.add('playing');
+          document.getElementById('musicNote').style.display = 'none';
+          startSavingPosition();
+        }).catch(() => {});
+      }
+    }
+
+    // Simpan posisi tepat saat klik pindah halaman
+    function savePositionNow() {
+      if (audio && isPlaying) {
+        localStorage.setItem('musikPosisi', audio.currentTime);
+      }
+    }
+
+    function toggleMusic() {
+      const btn  = document.getElementById('musicBtn');
+      const note = document.getElementById('musicNote');
+      initMusic();
+      if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+        btn.textContent = '🎵';
+        btn.classList.remove('playing');
+        note.style.display = '';
+        localStorage.setItem('musikAktif', 'tidak');
+        localStorage.removeItem('musikPosisi');
+      } else {
+        const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
+        audio.currentTime = savedPos;
+        audio.play().catch(() => {});
+        isPlaying = true;
+        btn.textContent = '🎶';
+        btn.classList.add('playing');
+        note.style.display = 'none';
+        localStorage.setItem('musikAktif', 'ya');
+        startSavingPosition();
+      }
+    }
+  </script>
+
+  <!-- ===== ALERT MUSIK SELESAI ===== -->
+  <div id="musikStopAlertPesan" style="
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  ">
+    <div style="
+      background: linear-gradient(135deg, #060f1e 0%, #0d2347 100%);
+      border: 1.5px solid rgba(74,144,217,0.4);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: alertInPesan 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    ">
+      <style>
+        @keyframes alertInPesan {
+          from { opacity: 0; transform: scale(0.85) translateY(20px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      </style>
+      <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">🎵</div>
+      <h3 style="
+        font-family: 'Dancing Script', cursive;
+        font-size: 1.6rem;
+        color: #7ec8f7;
+        margin-bottom: 0.7rem;
+      ">Musiknya Udah Selesai~</h3>
+      <p style="
+        color: #a8c8e8;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin-bottom: 1.8rem;
+      ">Mau lanjut dengerin musik lagi,<br>atau lanjut tanpa musik?</p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <button onclick="lanjutMusikPesan()" style="
+          padding: 0.75rem 1.5rem;
+          background: linear-gradient(135deg, #1a5fa8, #4a90d9);
+          border: none;
+          border-radius: 50px;
+          color: #fff;
+          font-size: 0.88rem;
+          font-family: 'Lato', sans-serif;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 4px 20px rgba(74,144,217,0.4);
+          transition: transform 0.15s;
+        " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          🎵 Lanjut Musik
+        </button>
+        <button onclick="tanpaMusikPesan()" style="
+          padding: 0.75rem 1.5rem;
+          background: rgba(255,255,255,0.08);
+          border: 1.5px solid rgba(255,255,255,0.2);
+          border-radius: 50px;
+          color: #a8c8e8;
+          font-size: 0.88rem;
+          font-family: 'Lato', sans-serif;
+          cursor: pointer;
+          transition: background 0.2s;
+        " onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+          Tanpa Musik
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

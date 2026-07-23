@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RAJUUUUU</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Floating Hearts Background -->
+  <div class="hearts-bg" id="heartsBg"></div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <p class="subtitle">Sape Ya Mbaa ini</p>
+      <h1 class="title">Untuk Kamu,<br>RAJUUUUU</h1>
+      <p class="tagline">Login Dulu Biar Tau Apa Isi website yang ku Buat</p>
+      <a href="login.html" class="btn-love">LOGIN</a>
+    </div>
+    <div class="scroll-hint">↓ Scroll ke bawah ↓</div>
+  </section>
+
+  <!-- Reasons Section -->
+  <section class="reasons">
+    <h2>Kenapa Aku Mencintaimu</h2>
+    <div class="cards">
+      <div class="card" data-delay="0">
+        <div class="icon">😊</div>
+        <h3>Senyummu</h3>
+        <p>Senyummu adalah hal pertama yang membuat aku jatuh cinta. Dunia terasa lebih cerah setiap kali kamu tersenyum.</p>
+      </div>
+      <div class="card" data-delay="150">
+        <div class="icon">🤝</div>
+        <h3>Kehadiranmu</h3>
+        <p>Setiap momen bersamamu terasa berarti. Kehadiranmu membuatku merasa lengkap dan bersyukur.</p>
+      </div>
+      <div class="card" data-delay="300">
+        <div class="icon">💪</div>
+        <h3>Kekuatanmu</h3>
+        <p>Cara kamu menghadapi segala tantangan dengan tegar selalu menginspirasi dan membuatku bangga.</p>
+      </div>
+      <div class="card" data-delay="450">
+        <div class="icon">🌙</div>
+        <h3>Kehangatanmu</h3>
+        <p>Di malam yang dingin maupun di hari yang berat, kehangatan hatimu selalu membuatku tenang.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Letter Section -->
+  <section class="letter">
+    <div class="envelope" id="envelope" onclick="openEnvelope()">
+      <div class="envelope-flap"></div>
+      <div class="envelope-body">
+        <span>💌 Klik untuk membuka surat</span>
+      </div>
+    </div>
+    <div class="letter-content" id="letterContent">
+      <h2>Suratku Untukmu</h2>
+      <p>
+        Sayangku,<br><br>
+        Aku tidak tahu harus mulai dari mana, karena setiap kata rasanya tidak cukup untuk menggambarkan betapa berartinya kamu bagiku.<br><br>
+        Kamu adalah alasan aku lebih semangat menjalani hari. Kamu adalah orang yang aku ceritakan semua hal — yang lucu, yang sedih, yang biasa saja — karena bersamamu, semua hal terasa lebih bermakna.<br><br>
+        Terima kasih sudah hadir, sudah sabar, dan sudah memilih untuk ada di sisiku. Aku berjanji untuk selalu berusaha menjadi yang terbaik untukmu.<br><br>
+        Dengan segenap cintaku,<br>
+        <em>Aku ❤️</em>
+      </p>
+    </div>
+  </section>
+
+  <!-- Timeline Section -->
+  <section class="timeline">
+    <h2>Momen Kita ✨</h2>
+    <div class="timeline-items">
+      <div class="timeline-item left">
+        <div class="timeline-dot">❤️</div>
+        <div class="timeline-box">
+          <h3>Pertama Bertemu</h3>
+          <p>Saat pertama kali aku melihatmu, aku tahu ada sesuatu yang istimewa dari dirimu.</p>
+        </div>
+      </div>
+      <div class="timeline-item right">
+        <div class="timeline-dot">💬</div>
+        <div class="timeline-box">
+          <h3>Mulai Dekat</h3>
+          <p>Obrolan kita yang tak pernah habis — dari hal sepele sampai hal terdalam di hati.</p>
+        </div>
+      </div>
+      <div class="timeline-item left">
+        <div class="timeline-dot">🌹</div>
+        <div class="timeline-box">
+          <h3>Jatuh Cinta</h3>
+          <p>Tanpa terasa, aku sudah jatuh cinta. Bukan hanya pada penampilanmu, tapi pada seluruh dirimu.</p>
+        </div>
+      </div>
+      <div class="timeline-item right">
+        <div class="timeline-dot">🔮</div>
+        <div class="timeline-box">
+          <h3>Selamanya</h3>
+          <p>Dan aku ingin terus menulis cerita indah ini bersamamu, selamanya.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final Section -->
+  <section class="final">
+    <div class="final-content">
+      <h2>Kamu Segalanya Bagiku 💕</h2>
+      <p>Tidak ada kata yang cukup, tidak ada hadiah yang setara.<br>Yang aku punya hanyalah cinta yang tulus, dan itu semuanya untukmu.</p>
+      <div class="heart-big" id="heartBig">❤️</div>
+      <p class="sign">~ Selalu milikmu ~</p>
+    </div>
+  </section>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2>💌 Pesan Spesial</h2>
+      <p>Hei kamu yang sedang membaca ini...</p>
+      <p>Aku hanya ingin kamu tahu bahwa kamu sangat dicintai. Setiap hari, setiap saat. Jangan pernah meragukan itu. ❤️</p>
+      <button class="btn-love" onclick="closeModal()">Aku Tahu 🥰</button>
+    </div>
+  </div>
+
+  <!-- ===== MUSIC BUTTON (FIXED) ===== -->
+  <div id="musicWrapper" style="
+    position: fixed; top: 1.2rem; right: 1.2rem;
+    z-index: 8000;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-direction: row-reverse;
+  ">
+    <button id="musicBtn" onclick="toggleMusic()" title="Musik" style="
+      background: rgba(255,182,193,0.35);
+      border: 1.5px solid rgba(255,105,135,0.5);
+      border-radius: 50%;
+      width: 46px; height: 46px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    ">🎵</button>
+    <span id="musicNote" style="
+      font-family: 'Lato', sans-serif;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.8);
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,105,135,0.3);
+      border-radius: 20px;
+      padding: 0.3rem 0.75rem;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+    ">🎵 Klik untuk putar musik</span>
+  </div>
+
+  <!-- ===== CUSTOM ALERT WELCOME MUSIK ===== -->
+  <div id="musikAlert" style="
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  ">
+    <div style="
+      background: linear-gradient(135deg, #1a0830 0%, #2d1050 100%);
+      border: 1.5px solid rgba(255,105,180,0.4);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: alertIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    ">
+      <div style="font-size: 2.8rem; margin-bottom: 0.8rem;">🎵</div>
+      <h3 style="
+        font-family: 'Dancing Script', cursive;
+        font-size: 1.7rem;
+        color: #ffb6d9;
+        margin-bottom: 0.7rem;
+        line-height: 1.3;
+      ">Biar Asik &amp; Ga Jenuh~</h3>
+      <p style="
+        color: #d4a8c8;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 1.8rem;
+      ">Sambil jalan-jalan di website ini,<br>mau setel musik dulu ga?<br><span style="font-size:0.8rem;opacity:0.7;">🎶 Jatuh Suka — Tulus</span></p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <button onclick="alertSetujuMusik()" style="
+          padding: 0.75rem 1.8rem;
+          background: linear-gradient(135deg, #d4548a, #a0275c);
+          border: none;
+          border-radius: 50px;
+          color: #fff;
+          font-size: 0.9rem;
+          font-family: 'Lato', sans-serif;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 4px 20px rgba(212,84,138,0.4);
+          transition: transform 0.15s;
+        " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          🎵 Setel Musik!
+        </button>
+        <button onclick="alertTolakMusik()" style="
+          padding: 0.75rem 1.8rem;
+          background: rgba(255,255,255,0.08);
+          border: 1.5px solid rgba(255,255,255,0.2);
+          border-radius: 50px;
+          color: #c8a0b8;
+          font-size: 0.9rem;
+          font-family: 'Lato', sans-serif;
+          cursor: pointer;
+          transition: background 0.2s;
+        " onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+          Nanti Aja
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ALERT LANJUT/TANPA MUSIK ===== -->
+  <div id="musikStopAlert" style="
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  ">
+    <div style="
+      background: linear-gradient(135deg, #1a0830 0%, #2d1050 100%);
+      border: 1.5px solid rgba(255,105,180,0.4);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: alertIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    ">
+      <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">🎵</div>
+      <h3 style="
+        font-family: 'Dancing Script', cursive;
+        font-size: 1.6rem;
+        color: #ffb6d9;
+        margin-bottom: 0.7rem;
+      ">Musiknya Udah Selesai~</h3>
+      <p style="
+        color: #d4a8c8;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin-bottom: 1.8rem;
+      ">Mau lanjut dengerin musik lagi,<br>atau lanjut tanpa musik?</p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <button onclick="lanjutMusik()" style="
+          padding: 0.75rem 1.5rem;
+          background: linear-gradient(135deg, #d4548a, #a0275c);
+          border: none;
+          border-radius: 50px;
+          color: #fff;
+          font-size: 0.88rem;
+          font-family: 'Lato', sans-serif;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 4px 20px rgba(212,84,138,0.4);
+          transition: transform 0.15s;
+        " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          🎵 Lanjut Musik
+        </button>
+        <button onclick="tanpaMusik()" style="
+          padding: 0.75rem 1.5rem;
+          background: rgba(255,255,255,0.08);
+          border: 1.5px solid rgba(255,255,255,0.2);
+          border-radius: 50px;
+          color: #c8a0b8;
+          font-size: 0.88rem;
+          font-family: 'Lato', sans-serif;
+          cursor: pointer;
+          transition: background 0.2s;
+        " onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+          Tanpa Musik
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes alertIn {
+      from { opacity: 0; transform: scale(0.85) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    #musicBtn.playing {
+      animation: musicBtnPulse 1.5s ease-in-out infinite !important;
+    }
+    @keyframes musicBtnPulse {
+      0%, 100% { box-shadow: 0 4px 15px rgba(255,105,135,0.4); }
+      50%       { box-shadow: 0 4px 30px rgba(255,105,135,0.8); }
+    }
+  </style>
+
+  <script src="script.js"></script>
+
+  <script>
+    // ===== MUSIK SISTEM (INDEX.HTML) =====
+    const MUSIC_URL_IDX = 'https://archive.org/download/tulus-manusia/06.%20Jatuh%20Suka.mp3';
+    let audioIdx = null;
+    let isPlayingIdx = false;
+    let saveIntervalIdx = null;
+
+    function initMusicIdx() {
+      if (!audioIdx) {
+        audioIdx = new Audio(MUSIC_URL_IDX);
+        audioIdx.loop   = false;
+        audioIdx.volume = 0.4;
+        // Ketika lagu selesai, tampilkan alert lanjut/tanpa musik
+        audioIdx.addEventListener('ended', function() {
+          isPlayingIdx = false;
+          clearInterval(saveIntervalIdx);
+          localStorage.setItem('musikAktif', 'tidak');
+          localStorage.removeItem('musikPosisi');
+          const btn = document.getElementById('musicBtn');
+          if (btn) { btn.textContent = '🎵'; btn.classList.remove('playing'); }
+          const note = document.getElementById('musicNote');
+          if (note) note.style.display = '';
+          showMusicStopAlert();
+        });
+      }
+    }
+
+    function startSavingIdx() {
+      clearInterval(saveIntervalIdx);
+      saveIntervalIdx = setInterval(() => {
+        if (audioIdx && isPlayingIdx) {
+          localStorage.setItem('musikPosisi', audioIdx.currentTime);
+        }
+      }, 200);
+    }
+
+    // Tampilkan alert welcome musik (hanya sekali per sesi)
+    window.addEventListener('load', function() {
+      // Jika sudah aktif sebelumnya, resume dulu
+      if (localStorage.getItem('musikAktif') === 'ya') {
+        initMusicIdx();
+        const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
+        audioIdx.currentTime = savedPos;
+        audioIdx.play().then(() => {
+          isPlayingIdx = true;
+          const btn = document.getElementById('musicBtn');
+          if (btn) { btn.textContent = '🎶'; btn.classList.add('playing'); }
+          const note = document.getElementById('musicNote');
+          if (note) note.style.display = 'none';
+          startSavingIdx();
+        }).catch(() => {});
+      } else {
+        // Musik tidak aktif — selalu tampilkan alert (termasuk saat refresh)
+        setTimeout(() => {
+          const alertEl = document.getElementById('musikAlert');
+          alertEl.style.display = 'flex';
+        }, 1000);
+      }
+    });
+
+    function alertSetujuMusik() {
+      document.getElementById('musikAlert').style.display = 'none';
+      initMusicIdx();
+      audioIdx.currentTime = 0;
+      audioIdx.play().then(() => {
+        isPlayingIdx = true;
+        const btn = document.getElementById('musicBtn');
+        if (btn) { btn.textContent = '🎶'; btn.classList.add('playing'); }
+        const note = document.getElementById('musicNote');
+        if (note) note.style.display = 'none';
+        localStorage.setItem('musikAktif', 'ya');
+        localStorage.setItem('musikPosisi', '0');
+        startSavingIdx();
+      }).catch(() => {});
+    }
+
+    function alertTolakMusik() {
+      document.getElementById('musikAlert').style.display = 'none';
+      localStorage.setItem('musikAktif', 'tidak');
+    }
+
+    function showMusicStopAlert() {
+      const alertEl = document.getElementById('musikStopAlert');
+      if (alertEl) alertEl.style.display = 'flex';
+    }
+
+    function lanjutMusik() {
+      document.getElementById('musikStopAlert').style.display = 'none';
+      initMusicIdx();
+      audioIdx.currentTime = 0;
+      audioIdx.play().then(() => {
+        isPlayingIdx = true;
+        const btn = document.getElementById('musicBtn');
+        if (btn) { btn.textContent = '🎶'; btn.classList.add('playing'); }
+        const note = document.getElementById('musicNote');
+        if (note) note.style.display = 'none';
+        localStorage.setItem('musikAktif', 'ya');
+        localStorage.setItem('musikPosisi', '0');
+        startSavingIdx();
+      }).catch(() => {});
+    }
+
+    function tanpaMusik() {
+      document.getElementById('musikStopAlert').style.display = 'none';
+      localStorage.setItem('musikAktif', 'tidak');
+      localStorage.removeItem('musikPosisi');
+    }
+
+    function toggleMusic() {
+      const btn  = document.getElementById('musicBtn');
+      const note = document.getElementById('musicNote');
+      initMusicIdx();
+      if (isPlayingIdx) {
+        audioIdx.pause();
+        isPlayingIdx = false;
+        clearInterval(saveIntervalIdx);
+        btn.textContent = '🎵';
+        btn.classList.remove('playing');
+        note.style.display = '';
+        localStorage.setItem('musikAktif', 'tidak');
+        localStorage.removeItem('musikPosisi');
+      } else {
+        const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
+        audioIdx.currentTime = savedPos;
+        audioIdx.play().then(() => {
+          isPlayingIdx = true;
+          btn.textContent = '🎶';
+          btn.classList.add('playing');
+          note.style.display = 'none';
+          localStorage.setItem('musikAktif', 'ya');
+          startSavingIdx();
+        }).catch(() => {});
+      }
+    }
+
+    // Simpan posisi saat user mau pindah halaman
+    document.addEventListener('click', function(e) {
+      const a = e.target.closest('a[href]');
+      if (a && audioIdx && isPlayingIdx) {
+        localStorage.setItem('musikPosisi', audioIdx.currentTime);
+      }
+    });
+  </script>
+</body>
+</html>
