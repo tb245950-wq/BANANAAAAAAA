@@ -4,7 +4,8 @@ if ('serviceWorker' in navigator) {
 
 var PLAYLIST = [
   { src: 'assets/audio/jatuh-suka.mp3', title: 'Jatuh Suka' },
-  { src: 'assets/audio/interaksi.mp3', title: 'Interaksi' }
+  { src: 'assets/audio/interaksi.mp3', title: 'Interaksi' },
+  { src: 'assets/audio/about-you.mp3', title: 'About You' }
 ];
 
 var Music = {
