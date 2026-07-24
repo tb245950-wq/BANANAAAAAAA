@@ -274,6 +274,59 @@
     <p>Sedang membuka halaman spesialmu...</p>
   </div>
 
+  <!-- ===== ALERT MUSIK SELESAI ===== -->
+  <div id="musikStopAlertLogin" style="
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  ">
+    <div style="
+      background: linear-gradient(135deg, #060f1e 0%, #0d2347 100%);
+      border: 1.5px solid rgba(74,144,217,0.4);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: alertInLogin 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    ">
+      <style>
+        @keyframes alertInLogin {
+          from { opacity: 0; transform: scale(0.85) translateY(20px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      </style>
+      <div style="font-size:2.5rem;margin-bottom:0.8rem;">🎵</div>
+      <h3 style="font-family:'Dancing Script',cursive;font-size:1.6rem;color:#7ec8f7;margin-bottom:0.7rem;">Musiknya Udah Selesai~</h3>
+      <p style="color:#a8c8e8;font-size:0.88rem;line-height:1.6;margin-bottom:1.8rem;">
+        Mau lanjut dengerin musik lagi,<br>atau lanjut tanpa musik?
+      </p>
+      <div style="display:flex;gap:1rem;justify-content:center;">
+        <button onclick="lanjutMusik()" style="
+          padding:0.75rem 1.5rem;
+          background:linear-gradient(135deg,#1a5fa8,#4a90d9);
+          border:none;border-radius:50px;color:#fff;
+          font-size:0.88rem;font-family:'Lato',sans-serif;font-weight:700;
+          cursor:pointer;box-shadow:0 4px 20px rgba(74,144,217,0.4);
+          transition:transform 0.15s;
+        ">🎵 Lanjut Musik</button>
+        <button onclick="tanpaMusik()" style="
+          padding:0.75rem 1.5rem;
+          background:rgba(255,255,255,0.08);
+          border:1.5px solid rgba(255,255,255,0.2);
+          border-radius:50px;color:#a8c8e8;
+          font-size:0.88rem;font-family:'Lato',sans-serif;
+          cursor:pointer;
+        ">Tanpa Musik</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ===== CREDENTIALS (defined in system) =====
     const CREDENTIALS = {
@@ -367,145 +420,11 @@
       }
     }
 
-    // Auto-focus password on load
     window.addEventListener('load', () => {
       document.getElementById('password').focus();
-      // ===== RESUME MUSIK JIKA AKTIF =====
-      resumeMusicLogin();
-    });
-
-    // ===== SISTEM MUSIK PERSISTENT (login.html) =====
-    const MUSIC_URL_LOGIN = 'https://archive.org/download/tulus-manusia/06.%20Jatuh%20Suka.mp3';
-    let audioLogin = null;
-    let isPlayingLogin = false;
-    let saveIntervalLogin = null;
-
-    function initMusicLogin() {
-      if (!audioLogin) {
-        audioLogin = new Audio(MUSIC_URL_LOGIN);
-        audioLogin.loop   = false;
-        audioLogin.volume = 0.4;
-        // Ketika lagu selesai
-        audioLogin.addEventListener('ended', function() {
-          isPlayingLogin = false;
-          clearInterval(saveIntervalLogin);
-          localStorage.setItem('musikAktif', 'tidak');
-          localStorage.removeItem('musikPosisi');
-          showMusicStopAlertLogin();
-        });
-      }
-    }
-
-    function startSavingLogin() {
-      clearInterval(saveIntervalLogin);
-      saveIntervalLogin = setInterval(() => {
-        if (audioLogin && isPlayingLogin) {
-          localStorage.setItem('musikPosisi', audioLogin.currentTime);
-        }
-      }, 200);
-    }
-
-    function resumeMusicLogin() {
-      if (localStorage.getItem('musikAktif') === 'ya') {
-        initMusicLogin();
-        const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
-        audioLogin.currentTime = savedPos;
-        audioLogin.play().then(() => {
-          isPlayingLogin = true;
-          startSavingLogin();
-        }).catch(() => {});
-      }
-    }
-
-    // Alert lanjut/tanpa musik - dibuat secara dinamis
-    function showMusicStopAlertLogin() {
-      // Hapus dulu kalau sudah ada
-      const existing = document.getElementById('musikStopAlertLogin');
-      if (existing) existing.remove();
-
-      const overlay = document.createElement('div');
-      overlay.id = 'musikStopAlertLogin';
-      overlay.style.cssText = `
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,0.65);
-        z-index: 99999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(6px);
-      `;
-      overlay.innerHTML = `
-        <div style="
-          background: linear-gradient(135deg, #060f1e 0%, #0d2347 100%);
-          border: 1.5px solid rgba(74,144,217,0.4);
-          border-radius: 24px;
-          padding: 2.5rem 2rem;
-          max-width: 380px;
-          width: 90%;
-          text-align: center;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-          animation: alertInLogin 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
-        ">
-          <style>
-            @keyframes alertInLogin {
-              from { opacity: 0; transform: scale(0.85) translateY(20px); }
-              to   { opacity: 1; transform: scale(1) translateY(0); }
-            }
-          </style>
-          <div style="font-size:2.5rem;margin-bottom:0.8rem;">🎵</div>
-          <h3 style="font-family:'Dancing Script',cursive;font-size:1.6rem;color:#7ec8f7;margin-bottom:0.7rem;">Musiknya Udah Selesai~</h3>
-          <p style="color:#a8c8e8;font-size:0.88rem;line-height:1.6;margin-bottom:1.8rem;">
-            Mau lanjut dengerin musik lagi,<br>atau lanjut tanpa musik?
-          </p>
-          <div style="display:flex;gap:1rem;justify-content:center;">
-            <button onclick="lanjutMusikLogin()" style="
-              padding:0.75rem 1.5rem;
-              background:linear-gradient(135deg,#1a5fa8,#4a90d9);
-              border:none;border-radius:50px;color:#fff;
-              font-size:0.88rem;font-family:'Lato',sans-serif;font-weight:700;
-              cursor:pointer;box-shadow:0 4px 20px rgba(74,144,217,0.4);
-              transition:transform 0.15s;
-            ">🎵 Lanjut Musik</button>
-            <button onclick="tanpaMusikLogin()" style="
-              padding:0.75rem 1.5rem;
-              background:rgba(255,255,255,0.08);
-              border:1.5px solid rgba(255,255,255,0.2);
-              border-radius:50px;color:#a8c8e8;
-              font-size:0.88rem;font-family:'Lato',sans-serif;
-              cursor:pointer;
-            ">Tanpa Musik</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-    }
-
-    function lanjutMusikLogin() {
-      const overlay = document.getElementById('musikStopAlertLogin');
-      if (overlay) overlay.remove();
-      initMusicLogin();
-      audioLogin.currentTime = 0;
-      audioLogin.play().then(() => {
-        isPlayingLogin = true;
-        localStorage.setItem('musikAktif', 'ya');
-        localStorage.setItem('musikPosisi', '0');
-        startSavingLogin();
-      }).catch(() => {});
-    }
-
-    function tanpaMusikLogin() {
-      const overlay = document.getElementById('musikStopAlertLogin');
-      if (overlay) overlay.remove();
-      localStorage.setItem('musikAktif', 'tidak');
-      localStorage.removeItem('musikPosisi');
-    }
-
-    // Simpan posisi saat pindah halaman (redirect setelah login)
-    window.addEventListener('beforeunload', function() {
-      if (audioLogin && isPlayingLogin) {
-        localStorage.setItem('musikPosisi', audioLogin.currentTime);
-      }
+      Music.resume();
     });
   </script>
+  <script src="music.js"></script>
 </body>
 </html>

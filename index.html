@@ -313,146 +313,15 @@
 
   <script src="script.js"></script>
 
+  <script src="music.js"></script>
   <script>
-    // ===== MUSIK SISTEM (INDEX.HTML) =====
-    const MUSIC_URL_IDX = 'https://archive.org/download/tulus-manusia/06.%20Jatuh%20Suka.mp3';
-    let audioIdx = null;
-    let isPlayingIdx = false;
-    let saveIntervalIdx = null;
-
-    function initMusicIdx() {
-      if (!audioIdx) {
-        audioIdx = new Audio(MUSIC_URL_IDX);
-        audioIdx.loop   = false;
-        audioIdx.volume = 0.4;
-        // Ketika lagu selesai, tampilkan alert lanjut/tanpa musik
-        audioIdx.addEventListener('ended', function() {
-          isPlayingIdx = false;
-          clearInterval(saveIntervalIdx);
-          localStorage.setItem('musikAktif', 'tidak');
-          localStorage.removeItem('musikPosisi');
-          const btn = document.getElementById('musicBtn');
-          if (btn) { btn.textContent = '🎵'; btn.classList.remove('playing'); }
-          const note = document.getElementById('musicNote');
-          if (note) note.style.display = '';
-          showMusicStopAlert();
-        });
-      }
-    }
-
-    function startSavingIdx() {
-      clearInterval(saveIntervalIdx);
-      saveIntervalIdx = setInterval(() => {
-        if (audioIdx && isPlayingIdx) {
-          localStorage.setItem('musikPosisi', audioIdx.currentTime);
-        }
-      }, 200);
-    }
-
-    // Tampilkan alert welcome musik (hanya sekali per sesi)
     window.addEventListener('load', function() {
-      // Jika sudah aktif sebelumnya, resume dulu
       if (localStorage.getItem('musikAktif') === 'ya') {
-        initMusicIdx();
-        const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
-        audioIdx.currentTime = savedPos;
-        audioIdx.play().then(() => {
-          isPlayingIdx = true;
-          const btn = document.getElementById('musicBtn');
-          if (btn) { btn.textContent = '🎶'; btn.classList.add('playing'); }
-          const note = document.getElementById('musicNote');
-          if (note) note.style.display = 'none';
-          startSavingIdx();
-        }).catch(() => {});
+        Music.resume();
       } else {
-        // Musik tidak aktif — selalu tampilkan alert (termasuk saat refresh)
-        setTimeout(() => {
-          const alertEl = document.getElementById('musikAlert');
-          alertEl.style.display = 'flex';
+        setTimeout(function() {
+          document.getElementById('musikAlert').style.display = 'flex';
         }, 1000);
-      }
-    });
-
-    function alertSetujuMusik() {
-      document.getElementById('musikAlert').style.display = 'none';
-      initMusicIdx();
-      audioIdx.currentTime = 0;
-      audioIdx.play().then(() => {
-        isPlayingIdx = true;
-        const btn = document.getElementById('musicBtn');
-        if (btn) { btn.textContent = '🎶'; btn.classList.add('playing'); }
-        const note = document.getElementById('musicNote');
-        if (note) note.style.display = 'none';
-        localStorage.setItem('musikAktif', 'ya');
-        localStorage.setItem('musikPosisi', '0');
-        startSavingIdx();
-      }).catch(() => {});
-    }
-
-    function alertTolakMusik() {
-      document.getElementById('musikAlert').style.display = 'none';
-      localStorage.setItem('musikAktif', 'tidak');
-    }
-
-    function showMusicStopAlert() {
-      const alertEl = document.getElementById('musikStopAlert');
-      if (alertEl) alertEl.style.display = 'flex';
-    }
-
-    function lanjutMusik() {
-      document.getElementById('musikStopAlert').style.display = 'none';
-      initMusicIdx();
-      audioIdx.currentTime = 0;
-      audioIdx.play().then(() => {
-        isPlayingIdx = true;
-        const btn = document.getElementById('musicBtn');
-        if (btn) { btn.textContent = '🎶'; btn.classList.add('playing'); }
-        const note = document.getElementById('musicNote');
-        if (note) note.style.display = 'none';
-        localStorage.setItem('musikAktif', 'ya');
-        localStorage.setItem('musikPosisi', '0');
-        startSavingIdx();
-      }).catch(() => {});
-    }
-
-    function tanpaMusik() {
-      document.getElementById('musikStopAlert').style.display = 'none';
-      localStorage.setItem('musikAktif', 'tidak');
-      localStorage.removeItem('musikPosisi');
-    }
-
-    function toggleMusic() {
-      const btn  = document.getElementById('musicBtn');
-      const note = document.getElementById('musicNote');
-      initMusicIdx();
-      if (isPlayingIdx) {
-        audioIdx.pause();
-        isPlayingIdx = false;
-        clearInterval(saveIntervalIdx);
-        btn.textContent = '🎵';
-        btn.classList.remove('playing');
-        note.style.display = '';
-        localStorage.setItem('musikAktif', 'tidak');
-        localStorage.removeItem('musikPosisi');
-      } else {
-        const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
-        audioIdx.currentTime = savedPos;
-        audioIdx.play().then(() => {
-          isPlayingIdx = true;
-          btn.textContent = '🎶';
-          btn.classList.add('playing');
-          note.style.display = 'none';
-          localStorage.setItem('musikAktif', 'ya');
-          startSavingIdx();
-        }).catch(() => {});
-      }
-    }
-
-    // Simpan posisi saat user mau pindah halaman
-    document.addEventListener('click', function(e) {
-      const a = e.target.closest('a[href]');
-      if (a && audioIdx && isPlayingIdx) {
-        localStorage.setItem('musikPosisi', audioIdx.currentTime);
       }
     });
   </script>

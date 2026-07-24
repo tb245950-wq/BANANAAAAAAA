@@ -1069,104 +1069,11 @@ function g5Finish() {
     </div>`;
 }
 
-// ===========================
-// MUSIK (persistent localStorage)
-// ===========================
-const MUSIC_URL = 'https://archive.org/download/tulus-manusia/06.%20Jatuh%20Suka.mp3';
-let audio = null, isPlaying = false;
-let saveIntervalLanjut = null;
+</script>
 
-function initMusic() {
-  if (!audio) {
-    audio = new Audio(MUSIC_URL);
-    audio.loop = false; // Tidak loop — biar ada alert saat selesai
-    audio.volume = 0.4;
-    // Ketika lagu selesai
-    audio.addEventListener('ended', function() {
-      isPlaying = false;
-      clearInterval(saveIntervalLanjut);
-      localStorage.setItem('musikAktif', 'tidak');
-      localStorage.removeItem('musikPosisi');
-      const btn = document.getElementById('musicBtn');
-      if (btn) { btn.textContent = '🎵'; btn.classList.remove('playing'); }
-      const note = document.getElementById('musicNote');
-      if (note) note.style.display = '';
-      showMusicStopAlertLanjut();
-    });
-  }
-}
-
-function showMusicStopAlertLanjut() {
-  const alertEl = document.getElementById('musikStopAlertLanjut');
-  if (alertEl) alertEl.style.display = 'flex';
-}
-
-function lanjutMusikLanjut() {
-  document.getElementById('musikStopAlertLanjut').style.display = 'none';
-  initMusic();
-  audio.currentTime = 0;
-  audio.play().then(() => {
-    isPlaying = true;
-    const btn = document.getElementById('musicBtn');
-    if (btn) { btn.textContent = '🎶'; btn.classList.add('playing'); }
-    const note = document.getElementById('musicNote');
-    if (note) note.style.display = 'none';
-    localStorage.setItem('musikAktif', 'ya');
-    localStorage.setItem('musikPosisi', '0');
-    startSavingPosition();
-  }).catch(() => {});
-}
-
-function tanpaMusikLanjut() {
-  document.getElementById('musikStopAlertLanjut').style.display = 'none';
-  localStorage.setItem('musikAktif', 'tidak');
-  localStorage.removeItem('musikPosisi');
-}
-
-function startSavingPosition() {
-  clearInterval(saveIntervalLanjut);
-  saveIntervalLanjut = setInterval(() => {
-    if (audio && isPlaying) localStorage.setItem('musikPosisi', audio.currentTime);
-  }, 200);
-}
-window.addEventListener('load', () => {
-  const btn = document.getElementById('musicBtn');
-  const note = document.getElementById('musicNote');
-  if (localStorage.getItem('musikAktif') === 'ya') {
-    initMusic();
-    const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
-    audio.currentTime = savedPos;
-    audio.play().then(() => {
-      isPlaying = true;
-      btn.textContent = '🎶';
-      btn.classList.add('playing');
-      note.style.display = 'none';
-      startSavingPosition();
-    }).catch(() => {});
-  }
-});
-function toggleMusic() {
-  const btn = document.getElementById('musicBtn');
-  const note = document.getElementById('musicNote');
-  initMusic();
-  if (isPlaying) {
-    audio.pause(); isPlaying = false;
-    clearInterval(saveIntervalLanjut);
-    btn.textContent = '🎵'; btn.classList.remove('playing');
-    note.style.display = '';
-    localStorage.setItem('musikAktif', 'tidak');
-    localStorage.removeItem('musikPosisi');
-  } else {
-    const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
-    audio.currentTime = savedPos;
-    audio.play().catch(() => {});
-    isPlaying = true;
-    btn.textContent = '🎶'; btn.classList.add('playing');
-    note.style.display = 'none';
-    localStorage.setItem('musikAktif', 'ya');
-    startSavingPosition();
-  }
-}
+<script src="music.js"></script>
+<script>
+window.addEventListener('load', function() { Music.resume(); });
 </script>
 
   <!-- ===== ALERT MUSIK SELESAI ===== -->
@@ -1210,7 +1117,7 @@ function toggleMusic() {
         margin-bottom: 1.8rem;
       ">Mau lanjut dengerin musik lagi,<br>atau lanjut tanpa musik?</p>
       <div style="display: flex; gap: 1rem; justify-content: center;">
-        <button onclick="lanjutMusikLanjut()" style="
+        <button onclick="lanjutMusik()" style="
           padding: 0.75rem 1.5rem;
           background: linear-gradient(135deg, #1a5fa8, #4a90d9);
           border: none;
@@ -1225,7 +1132,7 @@ function toggleMusic() {
         " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
           🎵 Lanjut Musik
         </button>
-        <button onclick="tanpaMusikLanjut()" style="
+        <button onclick="tanpaMusik()" style="
           padding: 0.75rem 1.5rem;
           background: rgba(255,255,255,0.08);
           border: 1.5px solid rgba(255,255,255,0.2);

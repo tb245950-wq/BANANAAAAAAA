@@ -459,7 +459,7 @@
         const main = document.getElementById('mainContent');
         main.classList.add('show');
         document.getElementById('musicWrapper').style.display = 'flex';
-        resumeMusicIfActive();
+        Music.resume();
         startFloatingHearts();
       }, 850);
     }
@@ -764,119 +764,9 @@
       btn.style.transition = 'left 0.18s ease, top 0.18s ease';
     }
 
-    // ===== MUSIC (persistent via localStorage) =====
-    const MUSIC_URL = 'https://archive.org/download/tulus-manusia/06.%20Jatuh%20Suka.mp3';
-    let audio = null;
-    let isPlaying = false;
-    let saveIntervalPesan = null;
-
-    function initMusic() {
-      if (!audio) {
-        audio = new Audio(MUSIC_URL);
-        audio.loop   = false; // Tidak loop — biar ada alert saat selesai
-        audio.volume = 0.4;
-        // Ketika lagu selesai, tampilkan alert
-        audio.addEventListener('ended', function() {
-          isPlaying = false;
-          clearInterval(saveIntervalPesan);
-          localStorage.setItem('musikAktif', 'tidak');
-          localStorage.removeItem('musikPosisi');
-          const btn = document.getElementById('musicBtn');
-          if (btn) { btn.textContent = '🎵'; btn.classList.remove('playing'); }
-          const note = document.getElementById('musicNote');
-          if (note) note.style.display = '';
-          showMusicStopAlertPesan();
-        });
-      }
-    }
-
-    function showMusicStopAlertPesan() {
-      const alertEl = document.getElementById('musikStopAlertPesan');
-      if (alertEl) alertEl.style.display = 'flex';
-    }
-
-    function lanjutMusikPesan() {
-      document.getElementById('musikStopAlertPesan').style.display = 'none';
-      initMusic();
-      audio.currentTime = 0;
-      audio.play().then(() => {
-        isPlaying = true;
-        const btn = document.getElementById('musicBtn');
-        if (btn) { btn.textContent = '🎶'; btn.classList.add('playing'); }
-        const note = document.getElementById('musicNote');
-        if (note) note.style.display = 'none';
-        localStorage.setItem('musikAktif', 'ya');
-        localStorage.setItem('musikPosisi', '0');
-        startSavingPosition();
-      }).catch(() => {});
-    }
-
-    function tanpaMusikPesan() {
-      document.getElementById('musikStopAlertPesan').style.display = 'none';
-      localStorage.setItem('musikAktif', 'tidak');
-      localStorage.removeItem('musikPosisi');
-    }
-
-    // Simpan posisi REALTIME setiap 200ms (lebih akurat)
-    function startSavingPosition() {
-      clearInterval(saveIntervalPesan);
-      saveIntervalPesan = setInterval(() => {
-        if (audio && isPlaying) {
-          localStorage.setItem('musikPosisi', audio.currentTime);
-        }
-      }, 200);
-    }
-
-    // Dipanggil setelah overlay hilang
-    function resumeMusicIfActive() {
-      if (localStorage.getItem('musikAktif') === 'ya') {
-        initMusic();
-        const btn      = document.getElementById('musicBtn');
-        const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
-        // Set currentTime langsung — tanpa tunggu event
-        audio.currentTime = savedPos;
-        audio.play().then(() => {
-          isPlaying = true;
-          btn.textContent = '🎶';
-          btn.classList.add('playing');
-          document.getElementById('musicNote').style.display = 'none';
-          startSavingPosition();
-        }).catch(() => {});
-      }
-    }
-
-    // Simpan posisi tepat saat klik pindah halaman
-    function savePositionNow() {
-      if (audio && isPlaying) {
-        localStorage.setItem('musikPosisi', audio.currentTime);
-      }
-    }
-
-    function toggleMusic() {
-      const btn  = document.getElementById('musicBtn');
-      const note = document.getElementById('musicNote');
-      initMusic();
-      if (isPlaying) {
-        audio.pause();
-        isPlaying = false;
-        btn.textContent = '🎵';
-        btn.classList.remove('playing');
-        note.style.display = '';
-        localStorage.setItem('musikAktif', 'tidak');
-        localStorage.removeItem('musikPosisi');
-      } else {
-        const savedPos = parseFloat(localStorage.getItem('musikPosisi') || '0');
-        audio.currentTime = savedPos;
-        audio.play().catch(() => {});
-        isPlaying = true;
-        btn.textContent = '🎶';
-        btn.classList.add('playing');
-        note.style.display = 'none';
-        localStorage.setItem('musikAktif', 'ya');
-        startSavingPosition();
-      }
-    }
   </script>
+
+  <script src="music.js"></script>
 
   <!-- ===== ALERT MUSIK SELESAI ===== -->
   <div id="musikStopAlertPesan" style="
@@ -919,7 +809,7 @@
         margin-bottom: 1.8rem;
       ">Mau lanjut dengerin musik lagi,<br>atau lanjut tanpa musik?</p>
       <div style="display: flex; gap: 1rem; justify-content: center;">
-        <button onclick="lanjutMusikPesan()" style="
+        <button onclick="lanjutMusik()" style="
           padding: 0.75rem 1.5rem;
           background: linear-gradient(135deg, #1a5fa8, #4a90d9);
           border: none;
@@ -934,7 +824,7 @@
         " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
           🎵 Lanjut Musik
         </button>
-        <button onclick="tanpaMusikPesan()" style="
+        <button onclick="tanpaMusik()" style="
           padding: 0.75rem 1.5rem;
           background: rgba(255,255,255,0.08);
           border: 1.5px solid rgba(255,255,255,0.2);
