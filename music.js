@@ -5,7 +5,9 @@ if ('serviceWorker' in navigator) {
 var PLAYLIST = [
   { src: 'assets/audio/jatuh-suka.mp3', title: 'Jatuh Suka' },
   { src: 'assets/audio/interaksi.mp3', title: 'Interaksi' },
-  { src: 'assets/audio/about-you.mp3', title: 'About You' }
+  { src: 'assets/audio/The 1975 - About You (Official).mp3', title: 'About You' },
+  { src: 'assets/audio/Oasis - Wonderwall (Lyrics).mp3', title: 'Wonderwall' },
+  { src: 'assets/audio/Oasis - Stand By Me (Official Lyric Video).mp3', title: 'Stand By Me' }
 ];
 
 var Music = {
@@ -19,6 +21,7 @@ var Music = {
     this._trackIndex = parseInt(localStorage.getItem('musikTrack') || '0', 10);
     if (this._trackIndex >= PLAYLIST.length) this._trackIndex = 0;
     this._createAudio();
+    this._buildPicker();
   },
 
   _createAudio: function() {
@@ -82,6 +85,32 @@ var Music = {
       note.style.display = playing ? 'none' : '';
       if (playing) note.textContent = '🎶 ' + PLAYLIST[this._trackIndex].title;
     }
+    this._updatePicker();
+  },
+
+  _buildPicker: function() {
+    var p = document.getElementById('musicPicker');
+    if (!p || p.dataset.built) return;
+    p.dataset.built = '1';
+    for (var i = 0; i < PLAYLIST.length; i++) {
+      var item = document.createElement('div');
+      item.className = 'music-pick-item';
+      item.dataset.idx = i;
+      item.innerHTML = '<span class="pick-num">' + (i + 1) + '</span>' + PLAYLIST[i].title;
+      item.onclick = (function(idx) { return function() { pickTrack(idx); }; })(i);
+      p.appendChild(item);
+    }
+  },
+
+  _updatePicker: function() {
+    var items = document.querySelectorAll('.music-pick-item');
+    for (var i = 0; i < items.length; i++) {
+      if (parseInt(items[i].dataset.idx) === this._trackIndex && this.isPlaying) {
+        items[i].classList.add('active');
+      } else {
+        items[i].classList.remove('active');
+      }
+    }
   },
 
   _startSaving: function() {
@@ -105,6 +134,15 @@ var Music = {
       self._updateUI(true);
       self._startSaving();
     }).catch(function(){});
+  },
+
+  playTrack: function(index) {
+    if (index < 0 || index >= PLAYLIST.length) return;
+    this._trackIndex = index;
+    localStorage.setItem('musikTrack', index);
+    localStorage.setItem('musikPosisi', '0');
+    this._createAudio();
+    this.play(0);
   },
 
   pause: function() {
@@ -140,6 +178,21 @@ var Music = {
 };
 
 function toggleMusic() { Music.toggle(); }
+
+function togglePlaylist() {
+  var p = document.getElementById('musicPicker');
+  if (!p) return;
+  Music._buildPicker();
+  var vis = p.style.display === 'block';
+  p.style.display = vis ? 'none' : 'block';
+  if (!vis) Music._updatePicker();
+}
+
+function pickTrack(idx) {
+  Music.playTrack(idx);
+  var p = document.getElementById('musicPicker');
+  if (p) p.style.display = 'none';
+}
 
 function alertSetujuMusik() {
   document.getElementById('musikAlert').style.display = 'none';
@@ -185,6 +238,15 @@ document.addEventListener('click', function(e) {
   var a = e.target.closest('a[href]');
   if (a && Music.audio && Music.isPlaying) {
     localStorage.setItem('musikPosisi', Music.audio.currentTime);
+  }
+});
+
+document.addEventListener('click', function(e) {
+  var picker = document.getElementById('musicPicker');
+  var btn = document.getElementById('musicBtn');
+  var listBtn = document.getElementById('musicListBtn');
+  if (picker && !picker.contains(e.target) && e.target !== btn && e.target !== listBtn) {
+    picker.style.display = 'none';
   }
 });
 

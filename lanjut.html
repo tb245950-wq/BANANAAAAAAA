@@ -287,6 +287,24 @@
       #heartArena { height: 280px; }
       .games-grid { grid-template-columns: 1fr; }
     }
+
+    /* ===== MUSIC PICKER ===== */
+    @keyframes pickerIn {
+      from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .music-pick-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.5rem 0.6rem; border-radius: 10px;
+      cursor: pointer; transition: background 0.15s;
+      font-size: 0.82rem; color: #a8c8e8;
+    }
+    .music-pick-item:hover { background: rgba(74,144,217,0.15); }
+    .music-pick-item.active { background: rgba(74,144,217,0.25); color: #fff; }
+    .music-pick-item .pick-num {
+      font-size: 0.7rem; color: #5a8aaa; min-width: 1.2rem; text-align: center;
+    }
+    .music-pick-item.active .pick-num { color: #7ec8f7; }
   </style>
 </head>
 <body>
@@ -297,7 +315,30 @@
 <!-- MUSIC -->
 <div id="musicWrapper">
   <button id="musicBtn" onclick="toggleMusic()" title="Musik">🎵</button>
+  <button id="musicListBtn" onclick="togglePlaylist()" title="Pilih Lagu" style="
+    background: rgba(26,95,168,0.3); border: 1.5px solid rgba(74,144,217,0.35);
+    border-radius: 50%; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; cursor: pointer; backdrop-filter: blur(8px);
+  ">&#9776;</button>
   <span id="musicNote" style="font-family:'Lato',sans-serif;font-size:0.72rem;color:rgba(168,200,232,0.75);background:rgba(6,15,30,0.6);backdrop-filter:blur(6px);border:1px solid rgba(74,144,217,0.2);border-radius:20px;padding:0.3rem 0.75rem;white-space:nowrap;letter-spacing:0.5px;">🎵 kalau mau sambil lagu klik tombol musik</span>
+</div>
+
+<!-- ===== MUSIC PICKER PANEL ===== -->
+<div id="musicPicker" style="
+  display: none;
+  position: fixed; top: 5.5rem; right: 1.2rem;
+  z-index: 8000;
+  background: rgba(6,15,30,0.95);
+  border: 1.5px solid rgba(74,144,217,0.4);
+  border-radius: 16px;
+  padding: 0.6rem;
+  min-width: 220px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  animation: pickerIn 0.25s ease both;
+">
+  <div style="font-family:'Dancing Script',cursive;color:#7ec8f7;font-size:1rem;padding:0.3rem 0.6rem 0.5rem;border-bottom:1px solid rgba(74,144,217,0.15);margin-bottom:0.4rem;">Playlist</div>
 </div>
 
 <!-- ===================== HUB PAGE ===================== -->
