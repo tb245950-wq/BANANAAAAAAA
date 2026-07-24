@@ -1,9 +1,12 @@
-const CACHE_NAME = 'music-v1';
-const AUDIO_PATH = 'assets/audio/jatuh-suka.mp3';
+const CACHE_NAME = 'music-v2';
+const AUDIO_FILES = [
+  'assets/audio/jatuh-suka.mp3',
+  'assets/audio/interaksi.mp3'
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.add(AUDIO_PATH))
+    caches.open(CACHE_NAME).then(cache => cache.addAll(AUDIO_FILES))
   );
   self.skipWaiting();
 });

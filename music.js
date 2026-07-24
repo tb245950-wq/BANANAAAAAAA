@@ -2,28 +2,54 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(function(){});
 }
 
+var PLAYLIST = [
+  { src: 'assets/audio/jatuh-suka.mp3', title: 'Jatuh Suka' },
+  { src: 'assets/audio/interaksi.mp3', title: 'Interaksi' }
+];
+
 var Music = {
   audio: null,
   isPlaying: false,
   _saveInterval: null,
+  _trackIndex: 0,
 
   init: function() {
     if (this.audio) return;
-    this.audio = new Audio('assets/audio/jatuh-suka.mp3');
+    this._trackIndex = parseInt(localStorage.getItem('musikTrack') || '0', 10);
+    if (this._trackIndex >= PLAYLIST.length) this._trackIndex = 0;
+    this._createAudio();
+  },
+
+  _createAudio: function() {
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.removeEventListener('ended', this._endedBound);
+    }
+    this.audio = new Audio(PLAYLIST[this._trackIndex].src);
     this.audio.volume = 0.4;
     this.audio.loop = false;
     this.audio.preload = 'auto';
-    var self = this;
-    this.audio.addEventListener('ended', function() { self._onEnded(); });
+    this._endedBound = this._onEnded.bind(this);
+    this.audio.addEventListener('ended', this._endedBound);
   },
 
   _onEnded: function() {
-    this.isPlaying = false;
-    clearInterval(this._saveInterval);
-    localStorage.setItem('musikAktif', 'tidak');
-    localStorage.removeItem('musikPosisi');
-    this._updateUI(false);
-    this._showStopAlert();
+    if (this._trackIndex < PLAYLIST.length - 1) {
+      this._trackIndex++;
+      localStorage.setItem('musikTrack', this._trackIndex);
+      this._createAudio();
+      this.audio.play().catch(function(){});
+      localStorage.setItem('musikPosisi', '0');
+    } else {
+      this.isPlaying = false;
+      clearInterval(this._saveInterval);
+      localStorage.setItem('musikAktif', 'tidak');
+      localStorage.removeItem('musikPosisi');
+      localStorage.removeItem('musikTrack');
+      this._trackIndex = 0;
+      this._updateUI(false);
+      this._showStopAlert();
+    }
   },
 
   _showStopAlert: function() {
@@ -42,7 +68,10 @@ var Music = {
       if (playing) btn.classList.add('playing');
       else btn.classList.remove('playing');
     }
-    if (note) note.style.display = playing ? 'none' : '';
+    if (note) {
+      note.style.display = playing ? 'none' : '';
+      if (playing) note.textContent = '🎶 ' + PLAYLIST[this._trackIndex].title;
+    }
   },
 
   _startSaving: function() {
@@ -94,6 +123,8 @@ var Music = {
     clearInterval(this._saveInterval);
     localStorage.setItem('musikAktif', 'tidak');
     localStorage.removeItem('musikPosisi');
+    localStorage.removeItem('musikTrack');
+    this._trackIndex = 0;
     this._updateUI(false);
   }
 };
@@ -102,6 +133,9 @@ function toggleMusic() { Music.toggle(); }
 
 function alertSetujuMusik() {
   document.getElementById('musikAlert').style.display = 'none';
+  Music._trackIndex = 0;
+  localStorage.setItem('musikTrack', '0');
+  Music._createAudio();
   Music.play(0);
 }
 
@@ -116,6 +150,9 @@ function lanjutMusik() {
     var el = document.getElementById(ids[i]);
     if (el) el.style.display = 'none';
   }
+  Music._trackIndex = 0;
+  localStorage.setItem('musikTrack', '0');
+  Music._createAudio();
   Music.play(0);
 }
 
