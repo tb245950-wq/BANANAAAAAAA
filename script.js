@@ -38,22 +38,6 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
 });
 
-// ===== ENVELOPE / LETTER =====
-function openEnvelope() {
-  const env = document.getElementById('envelope');
-  const letter = document.getElementById('letterContent');
-
-  if (!env.classList.contains('open')) {
-    env.classList.add('open');
-    setTimeout(() => {
-      letter.classList.add('show');
-      letter.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 500);
-  } else {
-    letter.classList.toggle('show');
-  }
-}
-
 // ===== SCROLL-TRIGGERED ANIMATIONS =====
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -71,37 +55,6 @@ document.querySelectorAll('.card').forEach(card => observer.observe(card));
 
 // Observe timeline items
 document.querySelectorAll('.timeline-item').forEach(item => observer.observe(item));
-
-// ===== HEART CLICK SPARKLE =====
-const bigHeart = document.getElementById('heartBig');
-bigHeart.addEventListener('click', function () {
-  // Burst of hearts on click
-  for (let i = 0; i < 8; i++) {
-    const spark = document.createElement('span');
-    spark.textContent = '❤️';
-    spark.style.cssText = `
-      position: fixed;
-      font-size: ${0.8 + Math.random()}rem;
-      pointer-events: none;
-      z-index: 999;
-      left: ${bigHeart.getBoundingClientRect().left + 30}px;
-      top: ${bigHeart.getBoundingClientRect().top + 30}px;
-      transition: all 0.8s ease-out;
-      opacity: 1;
-    `;
-    document.body.appendChild(spark);
-
-    // Animate outward
-    requestAnimationFrame(() => {
-      const angle = (i / 8) * 2 * Math.PI;
-      const dist = 60 + Math.random() * 60;
-      spark.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
-      spark.style.opacity = '0';
-    });
-
-    setTimeout(() => spark.remove(), 900);
-  }
-});
 
 // ===== SMOOTH ENTRANCE for hero text =====
 window.addEventListener('load', () => {
