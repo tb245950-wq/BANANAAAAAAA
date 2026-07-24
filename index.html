@@ -25,9 +25,10 @@
   </section>
 
   <!-- Reasons Section -->
-  <section class="reasons">
-    <h2>Kenapa Aku Mencintaimu</h2>
-    <div class="cards">
+  <section class="reasons" id="reasonsSection">
+    <canvas id="nightSkyCanvas"></canvas>
+    <h2 style="position:relative;z-index:2;">Kenapa Aku Mencintaimu</h2>
+    <div class="cards" style="position:relative;z-index:2;">
       <div class="card" data-delay="0">
         <div class="icon">😊</div>
         <h3>Senyummu</h3>
@@ -340,6 +341,246 @@
         }, 1000);
       }
     });
+
+    (function() {
+      var canvas = document.getElementById('nightSkyCanvas');
+      var section = document.getElementById('reasonsSection');
+      var ctx = canvas.getContext('2d');
+      var mouseX = -1000, mouseY = -1000;
+      var W, H;
+
+      function resize() {
+        W = section.offsetWidth;
+        H = section.offsetHeight;
+        canvas.width = W;
+        canvas.height = H;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      section.addEventListener('mousemove', function(e) {
+        var r = section.getBoundingClientRect();
+        mouseX = e.clientX - r.left;
+        mouseY = e.clientY - r.top;
+      });
+      section.addEventListener('mouseleave', function() {
+        mouseX = -1000;
+        mouseY = -1000;
+      });
+
+      var stars = [];
+      for (var i = 0; i < 180; i++) {
+        stars.push({
+          x: Math.random() * 2000,
+          y: Math.random() * 1200,
+          r: 0.4 + Math.random() * 1.8,
+          twinkle: Math.random() * Math.PI * 2,
+          speed: 0.3 + Math.random() * 2,
+          parallax: 0.02 + Math.random() * 0.06
+        });
+      }
+
+      var shootingStars = [];
+      function spawnShootingStar() {
+        if (shootingStars.length > 2) return;
+        shootingStars.push({
+          x: Math.random() * W * 0.7,
+          y: Math.random() * H * 0.4,
+          len: 60 + Math.random() * 80,
+          speed: 4 + Math.random() * 6,
+          angle: Math.PI / 4 + (Math.random() - 0.5) * 0.3,
+          life: 1,
+          decay: 0.015 + Math.random() * 0.01
+        });
+      }
+      setInterval(function() {
+        if (Math.random() < 0.4) spawnShootingStar();
+      }, 3000);
+
+      var moonX, moonY, moonR;
+      function calcMoon() {
+        moonR = Math.min(W, H) * 0.08;
+        moonX = W * 0.85;
+        moonY = H * 0.2;
+      }
+
+      function drawMoon(t) {
+        calcMoon();
+        var pulse = 1 + Math.sin(t * 0.001) * 0.03;
+        var r = moonR * pulse;
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(255,250,220,0.6)';
+        ctx.shadowBlur = 60;
+        ctx.beginPath();
+        ctx.arc(moonX, moonY, r, 0, Math.PI * 2);
+        var mg = ctx.createRadialGradient(moonX - r * 0.3, moonY - r * 0.3, r * 0.1, moonX, moonY, r);
+        mg.addColorStop(0, '#fffbe6');
+        mg.addColorStop(0.5, '#ffeeb3');
+        mg.addColorStop(1, '#ffd54f');
+        ctx.fillStyle = mg;
+        ctx.fill();
+        ctx.restore();
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(255,250,200,0.3)';
+        ctx.shadowBlur = 100;
+        ctx.beginPath();
+        ctx.arc(moonX, moonY, r * 1.15, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,250,220,0.08)';
+        ctx.fill();
+        ctx.restore();
+
+        var eyeOffX = r * 0.28;
+        var eyeOffY = r * 0.1;
+        var eyeR = r * 0.07;
+        ctx.fillStyle = '#5d4e37';
+        ctx.beginPath();
+        ctx.arc(moonX - eyeOffX, moonY - eyeOffY, eyeR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(moonX + eyeOffX, moonY - eyeOffY, eyeR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#5d4e37';
+        ctx.lineWidth = r * 0.04;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        var smileW = r * 0.35;
+        ctx.arc(moonX, moonY + r * 0.1, smileW, 0.15 * Math.PI, 0.85 * Math.PI);
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(255,180,150,0.35)';
+        ctx.beginPath();
+        ctx.ellipse(moonX - eyeOffX - r * 0.05, moonY + r * 0.18, r * 0.12, r * 0.07, -0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(moonX + eyeOffX + r * 0.05, moonY + r * 0.18, r * 0.12, r * 0.07, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function drawStars(t) {
+        for (var i = 0; i < stars.length; i++) {
+          var s = stars[i];
+          var bx = (s.x / 2000) * W;
+          var by = (s.y / 1200) * H;
+
+          var dx = 0, dy = 0;
+          if (mouseX > 0) {
+            dx = (mouseX - W / 2) * s.parallax;
+            dy = (mouseY - H / 2) * s.parallax;
+          }
+
+          var sx = bx + dx;
+          var sy = by + dy;
+
+          var twinkle = 0.4 + 0.6 * Math.abs(Math.sin(t * 0.001 * s.speed + s.twinkle));
+
+          var distToMouse = Math.sqrt((sx - mouseX) * (sx - mouseX) + (sy - mouseY) * (sy - mouseY));
+          var glowBoost = distToMouse < 120 ? (1 - distToMouse / 120) * 0.6 : 0;
+
+          ctx.save();
+          if (glowBoost > 0) {
+            ctx.shadowColor = 'rgba(200,220,255,' + glowBoost + ')';
+            ctx.shadowBlur = 15;
+          }
+          ctx.globalAlpha = twinkle * (0.7 + glowBoost * 0.3);
+          ctx.fillStyle = '#fff';
+          ctx.beginPath();
+          ctx.arc(sx, sy, s.r + glowBoost * 1.2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      function drawShootingStars() {
+        for (var i = shootingStars.length - 1; i >= 0; i--) {
+          var ss = shootingStars[i];
+          ss.x += Math.cos(ss.angle) * ss.speed;
+          ss.y += Math.sin(ss.angle) * ss.speed;
+          ss.life -= ss.decay;
+
+          if (ss.life <= 0 || ss.x > W + 100 || ss.y > H + 100) {
+            shootingStars.splice(i, 1);
+            continue;
+          }
+
+          var tailX = ss.x - Math.cos(ss.angle) * ss.len;
+          var tailY = ss.y - Math.sin(ss.angle) * ss.len;
+
+          var grad = ctx.createLinearGradient(tailX, tailY, ss.x, ss.y);
+          grad.addColorStop(0, 'rgba(255,255,255,0)');
+          grad.addColorStop(1, 'rgba(255,255,255,' + ss.life + ')');
+
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.5;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(tailX, tailY);
+          ctx.lineTo(ss.x, ss.y);
+          ctx.stroke();
+
+          ctx.save();
+          ctx.globalAlpha = ss.life;
+          ctx.shadowColor = '#fff';
+          ctx.shadowBlur = 8;
+          ctx.fillStyle = '#fff';
+          ctx.beginPath();
+          ctx.arc(ss.x, ss.y, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      function drawNebulaGlow() {
+        ctx.save();
+        ctx.globalAlpha = 0.06;
+        var ng1 = ctx.createRadialGradient(W * 0.2, H * 0.6, 0, W * 0.2, H * 0.6, W * 0.3);
+        ng1.addColorStop(0, '#4a6cf7');
+        ng1.addColorStop(1, 'transparent');
+        ctx.fillStyle = ng1;
+        ctx.fillRect(0, 0, W, H);
+
+        var ng2 = ctx.createRadialGradient(W * 0.7, H * 0.3, 0, W * 0.7, H * 0.3, W * 0.25);
+        ng2.addColorStop(0, '#9b59b6');
+        ng2.addColorStop(1, 'transparent');
+        ctx.fillStyle = ng2;
+        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
+      }
+
+      function drawCursorGlow() {
+        if (mouseX < 0) return;
+        ctx.save();
+        var cg = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 150);
+        cg.addColorStop(0, 'rgba(120,180,255,0.08)');
+        cg.addColorStop(0.5, 'rgba(120,180,255,0.03)');
+        cg.addColorStop(1, 'transparent');
+        ctx.fillStyle = cg;
+        ctx.fillRect(mouseX - 150, mouseY - 150, 300, 300);
+        ctx.restore();
+      }
+
+      function render(t) {
+        ctx.clearRect(0, 0, W, H);
+
+        var bg = ctx.createLinearGradient(0, 0, 0, H);
+        bg.addColorStop(0, '#030b1a');
+        bg.addColorStop(0.4, '#0a1628');
+        bg.addColorStop(1, '#0d1f3c');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, W, H);
+
+        drawNebulaGlow();
+        drawCursorGlow();
+        drawStars(t);
+        drawMoon(t);
+        drawShootingStars();
+
+        requestAnimationFrame(render);
+      }
+      requestAnimationFrame(render);
+    })();
   </script>
 </body>
 </html>
