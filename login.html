@@ -422,7 +422,16 @@
 
     window.addEventListener('load', () => {
       document.getElementById('password').focus();
-      Music.resume();
+      // Resume music on first user interaction (browser blocks autoplay without gesture)
+      function resumeOnInteraction() {
+        Music.resume();
+        document.removeEventListener('click', resumeOnInteraction);
+        document.removeEventListener('keydown', resumeOnInteraction);
+      }
+      if (localStorage.getItem('musikAktif') === 'ya') {
+        document.addEventListener('click', resumeOnInteraction);
+        document.addEventListener('keydown', resumeOnInteraction);
+      }
     });
   </script>
   <script src="music.js"></script>
