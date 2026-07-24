@@ -37,9 +37,18 @@ var Music = {
     if (this._trackIndex < PLAYLIST.length - 1) {
       this._trackIndex++;
       localStorage.setItem('musikTrack', this._trackIndex);
-      this._createAudio();
-      this.audio.play().catch(function(){});
       localStorage.setItem('musikPosisi', '0');
+      var self = this;
+      this._createAudio();
+      this.audio.currentTime = 0;
+      this.audio.addEventListener('canplay', function handler() {
+        self.audio.removeEventListener('canplay', handler);
+        self.audio.play().then(function() {
+          self.isPlaying = true;
+          self._updateUI(true);
+          self._startSaving();
+        }).catch(function(){});
+      });
     } else {
       this.isPlaying = false;
       clearInterval(this._saveInterval);
